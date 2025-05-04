@@ -47,6 +47,7 @@ function ProfileHeader() {
         {isEditing ? (
           <>
             <input 
+              style={{ border: 'none', borderRadius: '5px' }}
               value={inputValue} 
               onChange={(e) => setInputValue(e.target.value)} 
               style={{ padding: '5px' }}
