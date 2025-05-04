@@ -32,8 +32,9 @@ function ProfileHeader() {
   return (
     <div>
       <div style={{ textAlign: 'center' }}>
-        <h2>My Profile</h2>
-        <h3>Welcome Lyla Ibrahim!</h3>
+      <h1 style={{ color: 'white'}}>My Profile</h1>
+      <br></br>
+        <h3 style={{ color: '#1f0c44'}}>Welcome, Lyla Ibrahim!</h3>
         <img 
           src="/profilePhoto.jpeg" 
           alt="Profile" 
@@ -50,14 +51,14 @@ function ProfileHeader() {
               onChange={(e) => setInputValue(e.target.value)} 
               style={{ padding: '5px' }}
             />
-            <button onClick={handleSaveClick} style={{ marginLeft: '10px' }}>
+            <button class="profile-edit-button" onClick={handleSaveClick} style={{ marginLeft: '10px' }}>
               Save
             </button>
           </>
         ) : (
           <>
             <span>{food}</span>
-            <button onClick={handleEditClick} style={{ marginLeft: '10px' }}>
+            <button class="profile-edit-button" onClick={handleEditClick} style={{ marginLeft: '10px' }}>
               Edit
             </button>
           </>
@@ -73,14 +74,14 @@ function ProfileHeader() {
               onChange={(e) => setInputValueHobbies(e.target.value)} 
               style={{ padding: '5px' }}
             />
-            <button onClick={handleSaveClickHobbies} style={{ marginLeft: '10px' }}>
+            <button class="profile-edit-button" onClick={handleSaveClickHobbies} style={{ marginLeft: '10px' }}>
               Save
             </button>
           </>
         ) : (
           <>
             <span>{food}</span>
-            <button onClick={handleEditClickHobbies} style={{ marginLeft: '10px' }}>
+            <button class="profile-edit-button" onClick={handleEditClickHobbies} style={{ marginLeft: '10px' }}>
               Edit
             </button>
           </>

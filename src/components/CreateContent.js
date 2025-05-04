@@ -51,7 +51,7 @@ function CreateContentPage() {
       <form onSubmit={handleSubmit} className="create-content-form">
         <label>
           What do you want to create?
-          <br />
+          <br/>
           <select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="post">Post</option>
             <option value="poll">Poll</option>
