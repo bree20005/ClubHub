@@ -7,7 +7,11 @@ function ProfileHeader() {
 
   const [hobbies, setHobbies] = useState('None!'); 
   const [isEditingHobbies, setIsEditingHobbies] = useState(false);
-  const [inputValueHobbies, setInputValueHobbies] = useState(food);
+  const [inputValueHobbies, setInputValueHobbies] = useState(hobbies);
+
+  const [position, setPosition] = useState('None!'); 
+  const [isEditingPosition, setIsEditingPosition] = useState(false);
+  const [inputValuePosition, setInputValuePosition] = useState(position);
 
   const handleEditClick = () => {
     setInputValue(food);
@@ -20,13 +24,24 @@ function ProfileHeader() {
   };
 
   const handleEditClickHobbies = () => {
-    setInputValue(food);
-    setIsEditing(true);
+    setInputValueHobbies(hobbies);
+    setIsEditingHobbies(true);
   };
 
   const handleSaveClickHobbies = () => {
-    setFood(inputValue);
-    setIsEditing(false);
+    setHobbies(inputValueHobbies);
+    setIsEditingHobbies(false);
+
+  };
+
+  const handleEditClickPosition = () => {
+    setInputValuePosition(position);
+    setIsEditingPosition(true);
+  };
+
+  const handleSaveClickPosition = () => {
+    setPosition(inputValuePosition);
+    setIsEditingPosition(false);
   };
 
   return (
@@ -68,10 +83,10 @@ function ProfileHeader() {
 
       <div style={{ textAlign: 'center', marginTop: '10px', color: 'white' }}>
         <label>Other Clubs: </label>
-        {isEditing ? (
+        {isEditingHobbies ? (
           <>
             <input 
-              value={inputValue} 
+              value={inputValueHobbies} 
               onChange={(e) => setInputValueHobbies(e.target.value)} 
               style={{ padding: '5px' }}
             />
@@ -81,8 +96,31 @@ function ProfileHeader() {
           </>
         ) : (
           <>
-            <span>{food}</span>
+            <span>{hobbies}</span>
             <button class="profile-edit-button" onClick={handleEditClickHobbies} style={{ marginLeft: '10px' }}>
+              Edit
+            </button>
+          </>
+        )}
+      </div>
+
+      <div style={{ textAlign: 'center', marginTop: '10px', color: 'white' }}>
+        <label>Position in Wics: </label>
+        {isEditingPosition ? (
+          <>
+            <input 
+              value={inputValuePosition} 
+              onChange={(e) => setInputValuePosition(e.target.value)} 
+              style={{ padding: '5px' }}
+            />
+            <button class="profile-edit-button" onClick={handleSaveClickPosition} style={{ marginLeft: '10px' }}>
+              Save
+            </button>
+          </>
+        ) : (
+          <>
+            <span>{hobbies}</span>
+            <button class="profile-edit-button" onClick={handleEditClickPosition} style={{ marginLeft: '10px' }}>
               Edit
             </button>
           </>
