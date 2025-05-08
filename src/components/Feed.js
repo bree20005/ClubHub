@@ -32,8 +32,13 @@ function Feed() {
     <div className="feed-container">
       {/* Landing Page Header */}
       <header className="landing-header">
-        <h1>👋 Welcome to your WiCS Hub</h1>
-        <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
+        <div className="header-content">
+          <div>
+            <h1>👋 Welcome to your WiCS Hub</h1>
+            <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
+          </div>
+          <button className="login-button">Login / Sign Up</button>
+        </div>
       </header>
 
       {/* Posts and Polls */}

@@ -342,3 +342,31 @@ h1, h2, h3 {
 .logo:hover {
   cursor: pointer;
 }
+
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.login-button {
+  padding: 0.5rem 1rem;
+  background-color: #1f0c44;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #1f0c44;
+}
+
