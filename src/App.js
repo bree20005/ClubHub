@@ -3,7 +3,8 @@ import {
   Routes,
   Route,
   Link,
-  useLocation
+  useLocation,
+  useNavigate 
 } from 'react-router-dom';
 import Feed from './components/Feed';
 import Polls from './components/Polls';
@@ -14,6 +15,16 @@ import Login from './components/Login';
 import './index.css';
 import logo from './assets/logo.png';
 
+const Logo = ({ logo }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/'); // Navigate to the home page
+  };
+
+  return <img src={logo} alt="Logo" className="logo" onClick={handleClick}/>;
+};
+
 function Layout() {
   const location = useLocation();
   const hideSidebar = location.pathname === '/login';
@@ -22,7 +33,7 @@ function Layout() {
     <div className="app-container">
       {!hideSidebar && (
         <nav className="sidebar">
-          <img src={logo} alt="Logo" className="logo" />
+          <Logo logo={logo} className="logo"/>
           <ul>
             <li><Link to="/profile">My Profile</Link></li>
             <li><Link to="/">Feed</Link></li>
