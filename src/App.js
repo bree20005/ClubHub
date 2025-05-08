@@ -12,6 +12,7 @@ import Calendar from './components/Calendar';
 import CreateContentPage from './components/CreateContent';
 import Login from './components/Login';
 import './index.css';
+import logo from './assets/logo.png';
 
 function Layout() {
   const location = useLocation();
@@ -21,7 +22,7 @@ function Layout() {
     <div className="app-container">
       {!hideSidebar && (
         <nav className="sidebar">
-          <h2>Club Hub</h2>
+          <img src={logo} alt="Logo" className="logo" />
           <ul>
             <li><Link to="/profile">My Profile</Link></li>
             <li><Link to="/">Feed</Link></li>

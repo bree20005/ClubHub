@@ -162,7 +162,7 @@ function CreateContentPage() {
           </>
         )}
 
-        <button type="submit">Submit</button>
+        <button type="submit">Submit for Approval</button>
       </form>
 
       {/* Display submitted content */}
