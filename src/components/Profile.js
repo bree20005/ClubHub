@@ -33,7 +33,7 @@ function ProfileHeader() {
     setIsEditingHobbies(false);
 
   };
-
+//for position file
   const handleEditClickPosition = () => {
     setInputValuePosition(position);
     setIsEditingPosition(true);
