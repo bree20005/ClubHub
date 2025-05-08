@@ -8,14 +8,12 @@ function Poll({ question, options }) {
 
   // Fake vote counts 
   const totalVotes = 100;
-  const votes = options.map((opt, i) => (i === options.indexOf(selected) ? 40 : 20));
+  const votes = options.map((opt, i) => (i === options.indexOf(selected) ? 40 : 30));
   const percentages = votes.map(v => Math.round((v / totalVotes) * 100));
 
   const handleVote = (opt) => {
-    if (!hasVoted) {
       setSelected(opt);
       setHasVoted(true);
-    }
   };
   return (
     <div className="poll-card">
