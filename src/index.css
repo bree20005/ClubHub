@@ -343,6 +343,7 @@ h1, h2, h3 {
   cursor: pointer;
 }
 
+<<<<<<< HEAD
 
 .profile-btn-container {
   position: fixed;
@@ -376,3 +377,32 @@ h1, h2, h3 {
 .profile-btn i {
   margin: 0;
 }
+=======
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.login-button {
+  padding: 0.5rem 1rem;
+  background-color: #1f0c44;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #1f0c44;
+}
+
+>>>>>>> 71e80d1ac434f457de5d1b0b2a53c5bf628f1e82

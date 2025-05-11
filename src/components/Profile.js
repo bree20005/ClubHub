@@ -33,7 +33,7 @@ function ProfileHeader() {
     setIsEditingHobbies(false);
 
   };
-
+//for position file
   const handleEditClickPosition = () => {
     setInputValuePosition(position);
     setIsEditingPosition(true);
@@ -119,7 +119,7 @@ function ProfileHeader() {
             </>
           ) : (
             <>
-              <span>{hobbies}</span>
+              <span>{position}</span>
               <button class="profile-edit-button" onClick={handleEditClickPosition} style={{ marginLeft: '10px' }}>
                 Edit
               </button>
