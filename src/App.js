@@ -15,6 +15,7 @@ import Login from './components/Login';
 import './index.css';
 import logo from './assets/logo.png';
 
+
 const Logo = ({ logo }) => {
   const navigate = useNavigate();
 
@@ -42,6 +43,12 @@ function Layout() {
           </ul>
         </nav>
       )}
+
+      <div className="profile-btn-container">
+        <Link to="/profile" className="profile-btn">
+          <i className="fas fa-user"></i> {/* FontAwesome Person Icon */}
+        </Link>
+      </div>
 
       <main className="main-content">
         <Routes>

@@ -342,3 +342,37 @@ h1, h2, h3 {
 .logo:hover {
   cursor: pointer;
 }
+
+
+.profile-btn-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  transform: scale(0.8);
+}
+
+.profile-btn {
+  background-color: #400c4f;
+  color: white;
+  padding: 12px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -10px;
+  width: 40px;
+  height: 40px;
+  text-decoration: none;
+  font-size: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+.profile-btn:hover {
+  background-color: #330a33;
+}
+
+.profile-btn i {
+  margin: 0;
+}
