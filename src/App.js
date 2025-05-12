@@ -3,7 +3,8 @@ import {
   Routes,
   Route,
   Link,
-  useLocation
+  useLocation,
+  useNavigate 
 } from 'react-router-dom';
 import Feed from './components/Feed';
 import Polls from './components/Polls';
@@ -12,6 +13,18 @@ import Calendar from './components/Calendar';
 import CreateContentPage from './components/CreateContent';
 import Login from './components/Login';
 import './index.css';
+import logo from './assets/logo.png';
+
+
+const Logo = ({ logo }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/'); // Navigate to the home page
+  };
+
+  return <img src={logo} alt="Logo" className="logo" onClick={handleClick}/>;
+};
 
 function Layout() {
   const location = useLocation();
@@ -21,7 +34,7 @@ function Layout() {
     <div className="app-container">
       {!hideSidebar && (
         <nav className="sidebar">
-          <h2>Club Hub</h2>
+          <Logo logo={logo} className="logo"/>
           <ul>
             <li><Link to="/profile">My Profile</Link></li>
             <li><Link to="/">Feed</Link></li>
@@ -30,6 +43,12 @@ function Layout() {
           </ul>
         </nav>
       )}
+
+      <div className="profile-btn-container">
+        <Link to="/profile" className="profile-btn">
+          <i className="fas fa-user"></i> {/* FontAwesome Person Icon */}
+        </Link>
+      </div>
 
       <main className="main-content">
         <Routes>

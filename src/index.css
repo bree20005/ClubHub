@@ -29,7 +29,7 @@ h1, h2, h3 {
 
 /* Sidebar styling */
 .sidebar {
-  width: 220px;
+  width: 150px;
   background-color: #1f0c44;
   padding: 20px;
   color: #ffffff;
@@ -87,15 +87,21 @@ h1, h2, h3 {
 
 /* Poll options */
 .poll-card ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; 
+  width: fit-content; 
 }
 
 .poll-card li {
   margin-bottom: 10px;
+  width: 100%;
 }
 
-.poll-card button {
+/* .poll-card button {
   background-color: #ae9cc3;
   color: #1f2c3f;
   border: none;
@@ -103,11 +109,41 @@ h1, h2, h3 {
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  width: 100%; 
+  box-sizing: border-box;
+  text-align: left; 
+} */
+
+.poll-card button {
+  background-color: #ae9cc3;
+  color: #1f2c3f;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
 }
 
 .poll-card button:hover {
   background-color: #ae9cc3;
   transform: scale(1.02)
+}
+
+.poll-card button.selected {
+  background-color: #7c5e99;
+  color: white;
+}
+
+.poll-card .percentage {
+  margin-left: 15px;
+  font-weight: normal;
+  color: #ffffffcc;
 }
 
 /* Create content form */
@@ -251,15 +287,19 @@ h1, h2, h3 {
 .profile-photo {
   width: 150px;       
   height: 150px;
+  transform: scale(1.15);
   object-fit: cover;  
   border-radius: 50%; 
-  border: 2px solid #ccc; 
+  border: 2px solid #400c4f; 
   justify-content: center;
+  margin-bottom: 20px;
 }
 
 .profile-edit-button {
   border: none;
   border-radius: 5px;
+  background-color: #644d6a;
+  color: gray;
 }
 
 /* Landing page header styling */
@@ -291,17 +331,4 @@ h1, h2, h3 {
   margin-bottom: 3rem;
 }
 
-.comment-section {
-  margin-top: 1rem;
-}
-
-.comment-section input {
-  padding: 6px;
-  width: 70%;
-  margin-right: 6px;
-  border-radius: 5px;
-  border: 1px solid #ae9cc3;
-  background-color: #0a192f;
-  color: white;
-}
 
