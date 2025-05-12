@@ -1,4 +1,3 @@
-// src/components/Feed.js
 import React, { useState } from 'react';
 import Post from './Post';
 import Poll from './Polls';
@@ -10,6 +9,8 @@ function Feed() {
       id: 3,
       type: 'post',
       content: 'We are so happy to have you join our space.',
+      likes: 0,
+      comments: [],
     },
     {
       id: 2,
@@ -21,6 +22,8 @@ function Feed() {
       id: 1,
       type: 'post',
       content: '💡 Reminder: Club meeting this Friday at 5PM in WCC!',
+      likes: 2,
+      comments: ['See you there!', 'Can’t wait!'],
     },
   ]);
 
@@ -38,9 +41,32 @@ function Feed() {
 
       {/* Posts and Polls */}
       <div className="feed-items">
-        {posts.map((item) => {
-          if (item.type === 'post') return <Post key={item.id} content={item.content} />;
-          if (item.type === 'poll') return <Poll key={item.id} question={item.question} options={item.options} />;
+        {posts.map((item, index) => {
+          if (item.type === 'post') {
+            return (
+              <Post
+                key={item.id}
+                content={item.content}
+                likes={item.likes}
+                comments={item.comments}
+                onLike={() => {
+                  const updated = [...posts];
+                  updated[index].likes += 1;
+                  setPosts(updated);
+                }}
+                onComment={(comment) => {
+                  const updated = [...posts];
+                  updated[index].comments.push(comment);
+                  setPosts(updated);
+                }}
+              />
+            );
+          }
+
+          if (item.type === 'poll') {
+            return <Poll key={item.id} question={item.question} options={item.options} />;
+          }
+
           return null;
         })}
       </div>

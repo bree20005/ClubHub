@@ -291,4 +291,17 @@ h1, h2, h3 {
   margin-bottom: 3rem;
 }
 
+.comment-section {
+  margin-top: 1rem;
+}
+
+.comment-section input {
+  padding: 6px;
+  width: 70%;
+  margin-right: 6px;
+  border-radius: 5px;
+  border: 1px solid #ae9cc3;
+  background-color: #0a192f;
+  color: white;
+}
 
