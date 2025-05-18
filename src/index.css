@@ -332,3 +332,18 @@ h1, h2, h3 {
 }
 
 
+.club-selector {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.club-selector select {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ae9cc3;
+  background-color: #0a192f;
+  color: white;
+}
