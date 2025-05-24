@@ -1,115 +1,155 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabase';
 import Post from './Post';
 import Poll from './Polls';
 import Calendar from './Calendar';
+import ClubAutoJoin from './ClubAutoJoin';
 
 function Feed() {
-  const clubs = ['WiCS', 'OSTEM', 'SOLE'];
-  const [selectedClub, setSelectedClub] = useState(clubs[0]);
+  const [user, setUser] = useState(null);
+  const [joinedClubs, setJoinedClubs] = useState([]);
+  const [selectedClub, setSelectedClub] = useState('');
+  const [posts, setPosts] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('all');
 
-  const initialClubPosts = {
-    WiCS: [
-      {
-        id: 3,
-        type: 'event',
-        tag: 'event',
-        content: '🎉 Spring Social Mixer at White Plaza!',
-        date: '2025-05-25',
-        imageGallery: [],
-        likes: 0,
-        comments: [],
-      },
-      {
-        id: 2,
-        type: 'poll',
-        tag: 'poll',
-        question: 'What day works best for our next meeting?',
-        options: ['Mon', 'Wed', 'Fri'],
-      },
-      {
-        id: 1,
-        type: 'announcement',
-        tag: 'announcement',
-        content: '💡 Reminder: Club meeting this Friday at 5PM in WCC!',
-        likes: 2,
-        comments: ['See you there!', 'Can’t wait!'],
-      },
-    ],
-    OSTEM: [
-      {
-        id: 4,
-        type: 'event',
-        tag: 'event',
-        content: 'OSTEM Game Night this Thursday!',
-        likes: 5,
-        comments: ['Excited!', 'I’m bringing snacks!'],
-        imageGallery: [],
-      },
-    ],
-    SOLE: [
-      {
-        id: 5,
-        type: 'poll',
-        tag: 'poll',
-        question: 'Which workshop would you attend?',
-        options: ['Tech Interview Prep', 'Resume Review', 'Coffee Chat'],
-      },
-    ],
-  };
+  // Load user and joined clubs
+  useEffect(() => {
+    const loadData = async () => {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-  const [posts, setPosts] = useState(initialClubPosts[selectedClub]);
+      if (userError) {
+        console.error('User load error:', userError.message);
+        return;
+      }
 
-  const handleClubChange = (club) => {
-    setSelectedClub(club);
-    setSelectedFilter('all'); // reset filter when switching clubs
-    setPosts(initialClubPosts[club] || []);
-  };
+      setUser(user);
 
-  const updatePost = (index, updatedPost) => {
-    const updated = [...posts];
-    updated[index] = updatedPost;
-    setPosts(updated);
-  };
+      if (user) {
+        const { data: memberships, error: membershipError } = await supabase
+          .from('user_clubs')
+          .select('club_id, clubs!inner(name)')
+          .eq('user_id', user.id);
 
-  const addContent = (newContent) => {
-    const updatedPosts = [{ id: Date.now(), ...newContent }, ...posts];
-    setPosts(updatedPosts);
-    initialClubPosts[selectedClub] = updatedPosts;
-  };
+        if (membershipError) {
+          console.error('Error loading user clubs:', membershipError.message);
+        } else {
+          const clubNames = memberships.map((m) => m.clubs.name);
+          setJoinedClubs(clubNames);
+          setSelectedClub((prev) =>
+            clubNames.includes(prev) ? prev : clubNames[0] || ''
+          );
+        }
+      }
+    };
 
-  const filteredPosts = selectedFilter === 'all'
-    ? posts
-    : posts.filter((post) => post.tag === selectedFilter);
+    loadData();
+  }, []);
+
+  // Load posts when club changes
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!selectedClub) return;
+
+      const { data: club, error } = await supabase
+        .from('clubs')
+        .select('id')
+        .eq('name', selectedClub)
+        .single();
+
+      if (error) {
+        console.error('Error fetching club ID:', error.message);
+        return;
+      }
+
+      const { data: posts, error: postError } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('club_id', club.id)
+        .order('created_at', { ascending: false });
+
+      if (postError) {
+        console.error('Error loading posts:', postError.message);
+      } else {
+        setPosts(posts || []);
+      }
+    };
+
+    fetchPosts();
+  }, [selectedClub]);
+
+  const filteredPosts =
+    selectedFilter === 'all'
+      ? posts
+      : posts.filter((post) => post.tag === selectedFilter);
 
   return (
     <div className="feed-container">
       <header className="landing-header">
         <div className="header-content">
           <div>
-            <h1>👋 Welcome to your {selectedClub} Hub</h1>
+            <h1>👋 Welcome to your {selectedClub || 'Club'} Hub</h1>
             <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
           </div>
-          <button className="login-button">Login / Sign Up</button>
+          {!user ? (
+            <button
+              className="login-button"
+              onClick={() =>
+                supabase.auth.signInWithOAuth({ provider: 'google' })
+              }
+            >
+              Login with Google
+            </button>
+          ) : (
+            <button
+              className="login-button"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                window.location.reload();
+              }}
+            >
+              Logout
+            </button>
+          )}
         </div>
 
+        {/* Club Switcher */}
         <div className="club-selector">
           <label htmlFor="club-select">Switch Club:</label>
           <select
             id="club-select"
             value={selectedClub}
-            onChange={(e) => handleClubChange(e.target.value)}
+            onChange={(e) => setSelectedClub(e.target.value)}
           >
-            {clubs.map((club) => (
+            {joinedClubs.map((club) => (
               <option key={club} value={club}>
                 {club}
               </option>
             ))}
           </select>
         </div>
+
+        {/* Auto-Join Club Section */}
+        <ClubAutoJoin
+          user={user}
+          onClubJoined={async () => {
+            const { data: memberships } = await supabase
+              .from('user_clubs')
+              .select('club_id, clubs!inner(name)')
+              .eq('user_id', user.id);
+
+            const clubNames = memberships.map((m) => m.clubs.name);
+            setJoinedClubs(clubNames);
+            setSelectedClub((prev) =>
+              clubNames.includes(prev) ? prev : clubNames[0] || ''
+            );
+          }}
+        />
       </header>
 
-      {/* Tag Filters */}
+      {/* Filter Buttons */}
       <div className="feed-filter">
         {['all', 'event', 'announcement', 'poll'].map((tag) => (
           <button
@@ -128,10 +168,10 @@ function Feed() {
         ))}
       </div>
 
-      {/* Feed Content */}
+      {/* Posts */}
       <div className="feed-items">
         {filteredPosts.map((item, index) => {
-          if (item.type === 'post' || item.type === 'event' || item.type === 'announcement') {
+          if (['post', 'event', 'announcement'].includes(item.type)) {
             return (
               <Post
                 key={item.id}
@@ -143,29 +183,27 @@ function Feed() {
                 comments={item.comments}
                 onLike={() => {
                   const updatedPost = { ...item, likes: item.likes + 1 };
-                  updatePost(index, updatedPost);
+                  const newPosts = [...posts];
+                  newPosts[index] = updatedPost;
+                  setPosts(newPosts);
                 }}
                 onComment={(newComment) => {
                   const updatedPost = {
                     ...item,
                     comments: [...(item.comments || []), newComment],
                   };
-                  updatePost(index, updatedPost);
-                }}
-                onUploadPhoto={(file) => {
-                  const fakeUrl = URL.createObjectURL(file); // replace later with Supabase upload
-                  const updatedPost = {
-                    ...item,
-                    imageGallery: [...(item.imageGallery || []), fakeUrl],
-                  };
-                  updatePost(index, updatedPost);
+                  const newPosts = [...posts];
+                  newPosts[index] = updatedPost;
+                  setPosts(newPosts);
                 }}
               />
             );
           }
 
           if (item.type === 'poll') {
-            return <Poll key={item.id} question={item.question} options={item.options} />;
+            return (
+              <Poll key={item.id} question={item.question} options={item.options} />
+            );
           }
 
           return null;
