@@ -21,13 +21,18 @@ function ProfileHeader() {
     const loadProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-
+    
+      if (!user) {
+        console.error('User is not logged in');
+        return; // Stop execution if there's no user
+      }
+    
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
-
+    
       if (error) {
         console.error('Error fetching profile:', error.message);
       } else {
@@ -39,6 +44,7 @@ function ProfileHeader() {
         setPosition(data.position || 'None');
       }
     };
+    
 
     loadProfile();
   }, []);

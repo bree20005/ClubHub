@@ -1,17 +1,10 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useLocation,
-  useNavigate
-} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'; // <-- Import useNavigate here
 import Feed from './components/Feed';
 import Polls from './components/Polls';
 import Profile from './components/Profile';
 import Calendar from './components/Calendar';
 import CreateContentPage from './components/CreateContent';
-import Login from './components/Login';
+import LoginPage from './components/Login';
 import CreateProfilePage from './components/CreateProfilePage';
 import JoinOrCreateClubPage from './components/JoinOrCreateClubPage';
 import StartClubPage from './components/StartClubPage';
@@ -20,7 +13,7 @@ import './index.css';
 import logo from './assets/logo.png';
 
 const Logo = ({ logo }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate();  // <-- Initialize useNavigate
 
   const handleClick = () => {
     navigate('/');
@@ -31,36 +24,40 @@ const Logo = ({ logo }) => {
 
 function Layout() {
   const location = useLocation();
-  const hideSidebar = ['/login', '/create-profile'].includes(location.pathname);
+  // Hide sidebar only on landing page ("/") and login page ("/login")
+  const hideSidebar = location.pathname === '/' || location.pathname === '/login';
 
   return (
     <div className="app-container">
       {!hideSidebar && (
         <nav className="sidebar">
-          <Logo logo={logo} className="logo" />
+          <Logo logo={logo} />
           <ul>
             <li><Link to="/profile">My Profile</Link></li>
-            <li><Link to="/">Feed</Link></li>
+            <li><Link to="/feed">Feed</Link></li>
             <li><Link to="/calendar">Calendar</Link></li>
             <li><Link to="/create">Create Content</Link></li>
           </ul>
         </nav>
       )}
 
-      <div className="profile-btn-container">
-        <Link to="/profile" className="profile-btn">
-          <i className="fas fa-user"></i>
-        </Link>
-      </div>
+      {!hideSidebar && (
+        <div className="profile-btn-container">
+          <Link to="/profile" className="profile-btn">
+            <i className="fas fa-user"></i>
+          </Link>
+        </div>
+      )}
 
       <main className="main-content">
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<LoginPage />} /> {/* Landing page shows login */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/feed" element={<Feed />} />
           <Route path="/create-profile" element={<CreateProfilePage />} />
           <Route path="/join-or-create-club" element={<JoinOrCreateClubPage />} />
           <Route path="/start-club" element={<StartClubPage />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/" element={<Feed />} />
           <Route path="/polls" element={<Polls />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/create" element={<CreateContentPage />} />
@@ -69,6 +66,7 @@ function Layout() {
     </div>
   );
 }
+
 
 function App() {
   return (
