@@ -1,136 +1,175 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabase';
 
 function ProfileHeader() {
-  const [food, setFood] = useState('None'); 
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState({});
+
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(food);
-
-  const [hobbies, setHobbies] = useState('None'); 
   const [isEditingHobbies, setIsEditingHobbies] = useState(false);
-  const [inputValueHobbies, setInputValueHobbies] = useState(hobbies);
-
-  const [position, setPosition] = useState('None'); 
   const [isEditingPosition, setIsEditingPosition] = useState(false);
-  const [inputValuePosition, setInputValuePosition] = useState(position);
 
-  const handleEditClick = () => {
-    setInputValue(food);
-    setIsEditing(true);
-  };
+  const [food, setFood] = useState('');
+  const [hobbies, setHobbies] = useState('');
+  const [position, setPosition] = useState('');
 
-  const handleSaveClick = () => {
-    setFood(inputValue);
-    setIsEditing(false);
-  };
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [fullName, setFullName] = useState('');
 
-  const handleEditClickHobbies = () => {
-    setInputValueHobbies(hobbies);
-    setIsEditingHobbies(true);
-  };
+  // Load user and profile
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
 
-  const handleSaveClickHobbies = () => {
-    setHobbies(inputValueHobbies);
-    setIsEditingHobbies(false);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-  };
-//for position file
-  const handleEditClickPosition = () => {
-    setInputValuePosition(position);
-    setIsEditingPosition(true);
-  };
+      if (error) {
+        console.error('Error fetching profile:', error.message);
+      } else {
+        setProfile(data);
+        setFullName(data.full_name);
+        setAvatarUrl(data.avatar_url);
+        setFood(data.food_allergies || 'None');
+        setHobbies(data.other_clubs || 'None');
+        setPosition(data.position || 'None');
+      }
+    };
 
-  const handleSaveClickPosition = () => {
-    setPosition(inputValuePosition);
-    setIsEditingPosition(false);
+    loadProfile();
+  }, []);
+
+  const saveProfile = async (field, value) => {
+    const updates = { id: user.id, [field]: value };
+    const { error } = await supabase.from('profiles').upsert(updates);
+    if (error) alert('Failed to update: ' + error.message);
   };
 
   return (
     <div>
       <div style={{ textAlign: 'center' }}>
-      <h1 style={{ color: 'white'}}>My Profile</h1>
-      <br></br>
-        <h3 style={{ color: '#1f0c44', fontSize: '30px'}}>Welcome, Lyla Ibrahim!</h3>
-        <img 
-          src="/profilePhoto.jpeg" 
-          alt="Profile" 
+        <h1 style={{ color: 'white' }}>My Profile</h1>
+        <br />
+        <h3 style={{ color: '#1f0c44', fontSize: '30px' }}>
+          Welcome, {fullName || 'User'}!
+        </h3>
+        <img
+          src={avatarUrl || '/profilePhoto.jpeg'}
+          alt="Profile"
           className="profile-photo"
         />
       </div>
-      <div class="profile-container">
-        <div style={{ textAlign: 'center', marginTop: '10px', color: 'black'}}>
+
+      <div className="profile-container">
+        {/* Food Allergies */}
+        <div style={{ textAlign: 'center', marginTop: '10px', color: 'black' }}>
           <label>Food Allergies: </label>
           {isEditing ? (
             <>
-              <input 
-                style={{ border: 'none', borderRadius: '5px' }}
-                value={inputValue} 
-                onChange={(e) => setInputValue(e.target.value)} 
+              <input
+                value={food}
+                onChange={(e) => setFood(e.target.value)}
                 style={{ padding: '5px' }}
               />
-              <button class="profile-edit-button" onClick={handleSaveClick} style={{ marginLeft: '10px' }}>
+              <button
+                className="profile-edit-button"
+                onClick={() => {
+                  setIsEditing(false);
+                  saveProfile('food_allergies', food);
+                }}
+                style={{ marginLeft: '10px' }}
+              >
                 Save
               </button>
             </>
           ) : (
             <>
               <span>{food}</span>
-              <button class="profile-edit-button" onClick={handleEditClick} style={{ marginLeft: '10px' }}>
+              <button
+                className="profile-edit-button"
+                onClick={() => setIsEditing(true)}
+                style={{ marginLeft: '10px' }}
+              >
                 Edit
               </button>
             </>
           )}
         </div>
 
+        {/* Other Clubs */}
         <div style={{ textAlign: 'center', marginTop: '10px', color: 'black' }}>
           <label>Other Clubs: </label>
           {isEditingHobbies ? (
             <>
-              <input 
-                value={inputValueHobbies} 
-                onChange={(e) => setInputValueHobbies(e.target.value)} 
+              <input
+                value={hobbies}
+                onChange={(e) => setHobbies(e.target.value)}
                 style={{ padding: '5px' }}
               />
-              <button class="profile-edit-button" onClick={handleSaveClickHobbies} style={{ marginLeft: '10px' }}>
+              <button
+                className="profile-edit-button"
+                onClick={() => {
+                  setIsEditingHobbies(false);
+                  saveProfile('other_clubs', hobbies);
+                }}
+                style={{ marginLeft: '10px' }}
+              >
                 Save
               </button>
             </>
           ) : (
             <>
               <span>{hobbies}</span>
-              <button class="profile-edit-button" onClick={handleEditClickHobbies} style={{ marginLeft: '10px' }}>
+              <button
+                className="profile-edit-button"
+                onClick={() => setIsEditingHobbies(true)}
+                style={{ marginLeft: '10px' }}
+              >
                 Edit
               </button>
             </>
           )}
         </div>
 
+        {/* Position in WICS */}
         <div style={{ textAlign: 'center', marginTop: '10px', color: 'black' }}>
-          <label>Position in Wics: </label>
+          <label>Position in WICS: </label>
           {isEditingPosition ? (
             <>
-              <input 
-                value={inputValuePosition} 
-                onChange={(e) => setInputValuePosition(e.target.value)} 
+              <input
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
                 style={{ padding: '5px' }}
               />
-              <button class="profile-edit-button" onClick={handleSaveClickPosition} style={{ marginLeft: '10px' }}>
+              <button
+                className="profile-edit-button"
+                onClick={() => {
+                  setIsEditingPosition(false);
+                  saveProfile('position', position);
+                }}
+                style={{ marginLeft: '10px' }}
+              >
                 Save
               </button>
             </>
           ) : (
             <>
               <span>{position}</span>
-              <button class="profile-edit-button" onClick={handleEditClickPosition} style={{ marginLeft: '10px' }}>
+              <button
+                className="profile-edit-button"
+                onClick={() => setIsEditingPosition(true)}
+                style={{ marginLeft: '10px' }}
+              >
                 Edit
               </button>
             </>
           )}
         </div>
       </div>
-
-
-
-      
     </div>
   );
 }
