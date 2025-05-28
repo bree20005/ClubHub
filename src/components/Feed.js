@@ -3,82 +3,84 @@ import { supabase } from './supabase';
 import Post from './Post';
 import Poll from './Polls';
 import Calendar from './Calendar';
-import ClubAutoJoin from './ClubAutoJoin';
+import { useParams } from 'react-router-dom';
 
 function Feed() {
+  const { clubId } = useParams();
   const [user, setUser] = useState(null);
-  const [joinedClubs, setJoinedClubs] = useState([]);
-  const [selectedClub, setSelectedClub] = useState('');
   const [posts, setPosts] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [clubName, setClubName] = useState('');
 
-  // Load user and joined clubs
+  // Load user
   useEffect(() => {
-    const loadData = async () => {
+    const loadUser = async () => {
       const {
         data: { user },
-        error: userError,
+        error,
       } = await supabase.auth.getUser();
 
-      if (userError) {
-        console.error('User load error:', userError.message);
+      if (error) {
+        console.error('User load error:', error.message);
         return;
       }
 
       setUser(user);
-
-      if (user) {
-        const { data: memberships, error: membershipError } = await supabase
-          .from('user_clubs')
-          .select('club_id, clubs!inner(name)')
-          .eq('user_id', user.id);
-
-        if (membershipError) {
-          console.error('Error loading user clubs:', membershipError.message);
-        } else {
-          const clubNames = memberships.map((m) => m.clubs.name);
-          setJoinedClubs(clubNames);
-          setSelectedClub((prev) =>
-            clubNames.includes(prev) ? prev : clubNames[0] || ''
-          );
-        }
-      }
     };
 
-    loadData();
+    loadUser();
   }, []);
-
-  // Load posts when club changes
   useEffect(() => {
     const fetchPosts = async () => {
-      if (!selectedClub) return;
-
-      const { data: club, error } = await supabase
-        .from('clubs')
-        .select('id')
-        .eq('name', selectedClub)
-        .single();
-
-      if (error) {
-        console.error('Error fetching club ID:', error.message);
-        return;
-      }
-
-      const { data: posts, error: postError } = await supabase
+      const { data: posts, error } = await supabase
         .from('posts')
         .select('*')
-        .eq('club_id', club.id)
         .order('created_at', { ascending: false });
-
-      if (postError) {
-        console.error('Error loading posts:', postError.message);
+  
+      if (error) {
+        console.error('Error loading posts:', error.message);
       } else {
+        console.log('Fetched posts:', posts);  // ✅ Add this
         setPosts(posts || []);
       }
     };
-
+  
     fetchPosts();
-  }, [selectedClub]);
+  }, []);
+  
+  // // Load posts for selected club
+  // useEffect(() => {
+  //   const fetchPosts = async () => {
+  //     if (!clubId) return;
+
+  //     const { data: club, error: clubError } = await supabase
+  //       .from('clubs')
+  //       .select('id, name')
+  //       .eq('id', clubId)
+  //       .single();
+
+  //     if (clubError) {
+  //       console.error('Error fetching club:', clubError.message);
+  //       return;
+  //     }
+
+  //     setClubName(club.name);
+
+  //     const { data: posts, error: postError } = await supabase
+  //       .from('posts')
+  //       .select('*')
+  //       .eq('club_id', club.id)
+  //       .order('created_at', { ascending: false });
+
+  //     if (postError) {
+  //       console.error('Error loading posts:', postError.message);
+  //     } else {
+  //       setPosts(posts || []);
+  //     }
+  //   };
+
+  //   fetchPosts();
+  // }, [clubId]);
 
   const filteredPosts =
     selectedFilter === 'all'
@@ -90,7 +92,7 @@ function Feed() {
       <header className="landing-header">
         <div className="header-content">
           <div>
-            <h1>👋 Welcome to your {selectedClub || 'Club'} Hub</h1>
+            <h1>👋 Welcome to your {clubName || 'Club'} Hub</h1>
             <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
           </div>
           {!user ? (
@@ -114,39 +116,6 @@ function Feed() {
             </button>
           )}
         </div>
-
-        {/* Club Switcher */}
-        <div className="club-selector">
-          <label htmlFor="club-select">Switch Club:</label>
-          <select
-            id="club-select"
-            value={selectedClub}
-            onChange={(e) => setSelectedClub(e.target.value)}
-          >
-            {joinedClubs.map((club) => (
-              <option key={club} value={club}>
-                {club}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Auto-Join Club Section */}
-        <ClubAutoJoin
-          user={user}
-          onClubJoined={async () => {
-            const { data: memberships } = await supabase
-              .from('user_clubs')
-              .select('club_id, clubs!inner(name)')
-              .eq('user_id', user.id);
-
-            const clubNames = memberships.map((m) => m.clubs.name);
-            setJoinedClubs(clubNames);
-            setSelectedClub((prev) =>
-              clubNames.includes(prev) ? prev : clubNames[0] || ''
-            );
-          }}
-        />
       </header>
 
       {/* Filter Buttons */}
@@ -177,8 +146,8 @@ function Feed() {
                 key={item.id}
                 content={item.content}
                 tag={item.tag}
-                image={item.image}
-                imageGallery={item.imageGallery || []}
+                image={item.image_urls?.[0]} // Updated to use first image in array
+                imageGallery={item.image_urls || []}
                 likes={item.likes}
                 comments={item.comments}
                 onLike={() => {

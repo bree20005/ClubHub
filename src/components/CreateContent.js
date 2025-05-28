@@ -16,7 +16,6 @@ function CreateContentPage() {
   const [selectedClubId, setSelectedClubId] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // 🔐 Fetch user and their joined clubs
   useEffect(() => {
     const fetchClubs = async () => {
       const {
@@ -78,10 +77,10 @@ function CreateContentPage() {
       let imageUrl = null;
 
       if (imageFile) {
-        const filePath = `public/${Date.now()}_${imageFile.name}`;
+        const filePath = `${user.id}/${Date.now()}_${imageFile.name}`;
         const { data, error: uploadError } = await supabase.storage
           .from('post-images')
-          .upload(filePath, imageFile);
+          .upload(filePath, imageFile, { upsert: true });
 
         if (uploadError) {
           console.error('Upload failed:', uploadError.message);
@@ -90,9 +89,8 @@ function CreateContentPage() {
           return;
         }
 
-        imageUrl = supabase.storage
-          .from('post-images')
-          .getPublicUrl(data.path).data.publicUrl;
+        const { data: publicData } = supabase.storage.from('post-images').getPublicUrl(filePath);
+        imageUrl = publicData.publicUrl;
       }
 
       const { error } = await supabase.from('posts').insert({
@@ -102,6 +100,7 @@ function CreateContentPage() {
         content: caption,
         image_urls: imageUrl ? [imageUrl] : [],
         created_at: timestamp,
+        user_id: user.id,
       });
 
       if (error) {
@@ -112,6 +111,7 @@ function CreateContentPage() {
         setCaption('');
         setImage(null);
         setImageFile(null);
+        window.location.href = '/feed';
       }
     } else {
       const { error } = await supabase.from('posts').insert({
@@ -121,6 +121,7 @@ function CreateContentPage() {
         question,
         options: isOpenEnded ? [] : options,
         created_at: timestamp,
+        user_id: user.id,
       });
 
       if (error) {
@@ -131,6 +132,7 @@ function CreateContentPage() {
         setQuestion('');
         setOptions(['', '']);
         setIsOpenEnded(false);
+        window.location.href = '/feed';
       }
     }
 
@@ -147,7 +149,6 @@ function CreateContentPage() {
         <p>You haven’t joined any clubs yet. Join a club before creating content.</p>
       ) : (
         <form onSubmit={handleSubmit} className="create-content-form">
-          {/* Club dropdown */}
           <label>
             Select Club:
             <br />
@@ -163,7 +164,6 @@ function CreateContentPage() {
             </select>
           </label>
 
-          {/* Content type selector */}
           <label>
             What do you want to create?
             <br />

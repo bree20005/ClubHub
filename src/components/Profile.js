@@ -3,56 +3,66 @@ import { supabase } from './supabase';
 
 function ProfileHeader() {
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState({});
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [isEditingHobbies, setIsEditingHobbies] = useState(false);
-  const [isEditingPosition, setIsEditingPosition] = useState(false);
-
-  const [food, setFood] = useState('');
-  const [hobbies, setHobbies] = useState('');
-  const [position, setPosition] = useState('');
-
-  const [avatarUrl, setAvatarUrl] = useState('');
   const [fullName, setFullName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [clubs, setClubs] = useState([]);
 
-  // Load user and profile
   useEffect(() => {
     const loadProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-    
+
       if (!user) {
         console.error('User is not logged in');
-        return; // Stop execution if there's no user
+        return;
       }
-    
+
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('full_name, avatar_url')
         .eq('id', user.id)
         .single();
-    
+
       if (error) {
         console.error('Error fetching profile:', error.message);
       } else {
-        setProfile(data);
-        setFullName(data.full_name);
-        setAvatarUrl(data.avatar_url);
-        setFood(data.food_allergies || 'None');
-        setHobbies(data.other_clubs || 'None');
-        setPosition(data.position || 'None');
+        setFullName(data.full_name || '');
+        setAvatarUrl(data.avatar_url || '');  // Start blank
+      }
+
+      const { data: memberships, error: membershipError } = await supabase
+        .from('user_clubs')
+        .select('clubs(name)')
+        .eq('user_id', user.id);
+
+      if (membershipError) {
+        console.error('Error fetching clubs:', membershipError.message);
+      } else {
+        setClubs(memberships.map((m) => m.clubs.name));
       }
     };
-    
 
     loadProfile();
   }, []);
 
-  const saveProfile = async (field, value) => {
-    const updates = { id: user.id, [field]: value };
-    const { error } = await supabase.from('profiles').upsert(updates);
-    if (error) alert('Failed to update: ' + error.message);
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const fileExt = file.name.split('.').pop();
+    const filePath = `avatars/${user.id}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      alert('Upload failed: ' + uploadError.message);
+    } else {
+      const { data: publicUrl } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      setAvatarUrl(publicUrl.publicUrl);
+      await supabase.from('profiles').upsert({ id: user.id, avatar_url: publicUrl.publicUrl });
+    }
   };
 
   return (
@@ -63,118 +73,40 @@ function ProfileHeader() {
         <h3 style={{ color: '#1f0c44', fontSize: '30px' }}>
           Welcome, {fullName || 'User'}!
         </h3>
-        <img
-          src={avatarUrl || '/profilePhoto.jpeg'}
-          alt="Profile"
-          className="profile-photo"
-        />
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt="Profile"
+            className="profile-photo"
+            style={{ borderRadius: '50%', width: '120px', height: '120px' }}
+          />
+        ) : (
+          <div
+            style={{
+              width: '120px',
+              height: '120px',
+              borderRadius: '50%',
+              backgroundColor: '#ccc',
+              display: 'inline-block',
+              lineHeight: '120px',
+              color: '#555',
+              fontSize: '14px',
+            }}
+          >
+            No Image
+          </div>
+        )}
+        <br />
+        <input type="file" onChange={handleAvatarUpload} style={{ marginTop: '10px' }} />
       </div>
 
-      <div className="profile-container">
-        {/* Food Allergies */}
-        <div style={{ textAlign: 'center', marginTop: '10px', color: 'black' }}>
-          <label>Food Allergies: </label>
-          {isEditing ? (
-            <>
-              <input
-                value={food}
-                onChange={(e) => setFood(e.target.value)}
-                style={{ padding: '5px' }}
-              />
-              <button
-                className="profile-edit-button"
-                onClick={() => {
-                  setIsEditing(false);
-                  saveProfile('food_allergies', food);
-                }}
-                style={{ marginLeft: '10px' }}
-              >
-                Save
-              </button>
-            </>
-          ) : (
-            <>
-              <span>{food}</span>
-              <button
-                className="profile-edit-button"
-                onClick={() => setIsEditing(true)}
-                style={{ marginLeft: '10px' }}
-              >
-                Edit
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Other Clubs */}
-        <div style={{ textAlign: 'center', marginTop: '10px', color: 'black' }}>
-          <label>Other Clubs: </label>
-          {isEditingHobbies ? (
-            <>
-              <input
-                value={hobbies}
-                onChange={(e) => setHobbies(e.target.value)}
-                style={{ padding: '5px' }}
-              />
-              <button
-                className="profile-edit-button"
-                onClick={() => {
-                  setIsEditingHobbies(false);
-                  saveProfile('other_clubs', hobbies);
-                }}
-                style={{ marginLeft: '10px' }}
-              >
-                Save
-              </button>
-            </>
-          ) : (
-            <>
-              <span>{hobbies}</span>
-              <button
-                className="profile-edit-button"
-                onClick={() => setIsEditingHobbies(true)}
-                style={{ marginLeft: '10px' }}
-              >
-                Edit
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Position in WICS */}
-        <div style={{ textAlign: 'center', marginTop: '10px', color: 'black' }}>
-          <label>Position in WICS: </label>
-          {isEditingPosition ? (
-            <>
-              <input
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
-                style={{ padding: '5px' }}
-              />
-              <button
-                className="profile-edit-button"
-                onClick={() => {
-                  setIsEditingPosition(false);
-                  saveProfile('position', position);
-                }}
-                style={{ marginLeft: '10px' }}
-              >
-                Save
-              </button>
-            </>
-          ) : (
-            <>
-              <span>{position}</span>
-              <button
-                className="profile-edit-button"
-                onClick={() => setIsEditingPosition(true)}
-                style={{ marginLeft: '10px' }}
-              >
-                Edit
-              </button>
-            </>
-          )}
-        </div>
+      <div style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>
+        <h3>My Clubs:</h3>
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {clubs.map((club, index) => (
+            <li key={index} style={{ padding: '4px 0' }}>{club}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
