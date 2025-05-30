@@ -49,11 +49,18 @@ function LoginPage() {
   };
 
   return (
+    // <div className="login-page">
+    //   <h1>Login / Sign Up</h1>
+    //   <button onClick={handleLogin}>Continue with Google</button>
+    // </div>
     <div className="login-page">
-      <h1>Login / Sign Up</h1>
-      <button onClick={handleLogin}>Continue with Google</button>
+      <h1>Join Your Community</h1>
+      <button className="google-button" onClick={handleLogin}>
+        Continue with Google
+      </button>
     </div>
   );
-}
+ }
+ 
 
 export default LoginPage;

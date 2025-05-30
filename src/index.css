@@ -1,11 +1,11 @@
 /* index.css */
-
 body {
   margin: 0;
   padding: 0;
   font-family: 'Helvetica Neue', Arial, sans-serif;
   background-color: #0a192f;
   color: #ffffff;
+  height: 100%;
 }
 
 a {
@@ -222,9 +222,10 @@ h1, h2, h3 {
   align-items: center;
   justify-content: center;
   height: 100vh;
+  padding: 0;
   background-color: #0a192f;
   color: white;
-  padding: 2rem;
+  box-sizing: border-box;
 }
 
 .login-form {
@@ -605,3 +606,141 @@ h1, h2, h3 {
   transform: scale(1.1);
   transition: all 0.2s ease;
 }
+
+.login-page {
+  padding: 0;
+  position: relative;
+  background-image: url('/Users/komalvij/Desktop/Projects/CS 278/cs278project/public/login_background.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  padding: 0 20px;
+  overflow: hidden;
+ }
+ 
+ 
+ .login-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+ }
+ 
+ 
+ .login-page h1,
+ .login-page .google-button {
+  z-index: 1;
+  position: relative;
+ }
+ 
+ 
+ .login-page h1 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+ }
+ 
+ 
+ .google-button {
+  background-color: white;
+  color: #444;
+  font-weight: bold;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+ }
+ 
+ 
+ .google-button:hover {
+  background-color: #f1f1f1;
+ }
+ 
+ 
+ .profile-form {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ }
+ 
+ 
+ .profile-form h1 {
+  color: #222;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 2rem;
+ }
+ 
+ 
+ .profile-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+ }
+ 
+ 
+ .profile-form input[type="text"] {
+  padding: 1.5rem 1rem;
+  font-size: 1.3rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+ }
+ 
+ 
+ .profile-form input[type="text"]:focus {
+  outline: none;
+  border-color: #4a90e2;
+ }
+ 
+ 
+ .profile-form input[type="file"] {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+ }
+ 
+ 
+ .profile-form button {
+  background-color: #1f0c44;
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+ }
+ 
+ 
+ .profile-form button:hover {
+  background-color: #357abd;
+ }
+ 
+ 
+ 
