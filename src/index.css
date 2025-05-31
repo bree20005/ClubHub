@@ -610,7 +610,7 @@ h1, h2, h3 {
 .login-page {
   padding: 0;
   position: relative;
-  background-image: url('/Users/komalvij/Desktop/Projects/CS 278/cs278project/public/login_background.jpg');
+  background-image: url('./assets/login_background.png');
   background-size: cover;
   background-position: center;
   height: 100vh;
