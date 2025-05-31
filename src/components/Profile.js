@@ -32,13 +32,15 @@ function ProfileHeader() {
 
       const { data: memberships, error: membershipError } = await supabase
         .from('user_clubs')
-        .select('clubs(name)')
+        .select('clubs(name, logo_url)')
         .eq('user_id', user.id);
 
       if (membershipError) {
         console.error('Error fetching clubs:', membershipError.message);
       } else {
-        setClubs(memberships.map((m) => m.clubs.name));
+        //setClubs(memberships.map((m) => m.clubs.name));
+        setClubs(memberships.map((m) => m.clubs));
+
       }
     };
 
@@ -103,10 +105,38 @@ function ProfileHeader() {
       <div style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>
         <h3>My Clubs:</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {clubs.map((club, index) => (
-            <li key={index} style={{ padding: '4px 0' }}>{club}</li>
-          ))}
-        </ul>
+        
+  {clubs.map((club, index) => (
+    <li //basically this is all linking up the club logos on profile page
+      key={index}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '6px',
+      }}> 
+      {club.logo_url ? (
+        <img
+          src={club.logo_url}
+          alt={`${club.name} logo`}
+          style={{
+            width: '40px',
+            height: '40px',
+            marginRight: '10px',
+            borderRadius: '5px',
+            objectFit: 'cover',
+          }}/>): (
+        <div style={{
+            width: '40px',
+            height: '40px',
+            marginRight: '10px',
+            borderRadius: '5px',
+          }}/>
+      )}
+      <span>{club.name}</span>
+    </li> 
+  ))}
+</ul>
       </div>
     </div>
   );

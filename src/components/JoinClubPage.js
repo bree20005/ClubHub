@@ -19,7 +19,7 @@ function JoinClubPage() {
 
     const { data: club, error } = await supabase
       .from('clubs')
-      .select('id')
+      .select('id, name')
       .eq('code', code)
       .single();
 
