@@ -60,9 +60,11 @@ function Feed() {
   useEffect(() => {
     const fetchPostsWithMeta = async () => {
       const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select('*, profiles (full_name)')
-        .order('created_at', { ascending: false });
+            .from('posts')
+            .select('*, profiles (full_name)')
+            .eq('club_id', clubId)
+            .order('created_at', { ascending: false });
+
 
       if (postsError) {
         console.error('Error loading posts:', postsError.message);
@@ -142,7 +144,7 @@ function Feed() {
           <div>
             <h1>👋 Welcome to your {clubName || 'Club'} Hub</h1>
             <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
-            <p>Remeber the rules of {clubName}: {rules} !!!</p>
+            <h2>Remeber the rules set by your club moderators: {rules} !!!</h2>
           </div>
           {!user ? (
             <button
