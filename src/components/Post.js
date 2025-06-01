@@ -1,95 +1,202 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabase';
 
-function Post({
-  content,
-  tag,
-  image = null,
-  likes,
-  comments = [],
-  imageGallery = [],
-  onLike,
-  onComment,
-  onUploadPhoto,
-}) {
+function Post({ id, content, tag, image, imageGallery = [], authorName, createdAt, user }) {
   const [commentText, setCommentText] = useState('');
-  const [showGallery, setShowGallery] = useState(false);
+  const [commentList, setCommentList] = useState([]);
+  const [replyTo, setReplyTo] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [userHasLiked, setUserHasLiked] = useState(false);
+
+  // Fetch comments
+  useEffect(() => {
+    const fetchComments = async () => {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*, profiles(full_name)')
+        .eq('post_id', id)
+        .order('created_at', { ascending: true });
+
+      if (!error) {
+        setCommentList(data);
+      } else {
+        console.error('Error fetching comments:', error.message);
+      }
+    };
+
+    fetchComments();
+  }, [id]);
+
+  // Fetch likes
+  useEffect(() => {
+    const fetchLikes = async () => {
+      const { data } = await supabase
+        .from('likes')
+        .select('*')
+        .eq('post_id', id);
+
+      setLikes(data.length);
+      setUserHasLiked(data.some((like) => like.user_id === user?.id));
+    };
+
+    if (user) fetchLikes();
+  }, [id, user]);
+
+  // Real-time subscription to likes
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime-likes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'likes',
+          filter: `post_id=eq.${id}`,
+        },
+        async () => {
+          const { data } = await supabase
+            .from('likes')
+            .select('*')
+            .eq('post_id', id);
+
+          setLikes(data.length);
+          setUserHasLiked(data.some((like) => like.user_id === user?.id));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, user]);
+
+  const handleLike = async () => {
+    if (!user) return;
+  
+    // update visually 
+    setUserHasLiked(prev => !prev);
+    setLikes(prev => prev + (userHasLiked ? -1 : 1));
+  
+    // Then update the DB
+    if (userHasLiked) {
+      await supabase
+        .from('likes')
+        .delete()
+        .eq('post_id', id)
+        .eq('user_id', user.id);
+    } else {
+      await supabase
+        .from('likes')
+        .insert([{ post_id: id, user_id: user.id }]);
+    }
+  };
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+
+    const { data, error } = await supabase
+      .from('comments')
+      .insert([{
+        post_id: id,
+        user_id: user.id,
+        content: commentText,
+        parent_id: replyTo,
+      }])
+      .select('*, profiles(full_name)');
+
+    if (!error && data?.[0]) {
+      setCommentList([...commentList, data[0]]);
+      setCommentText('');
+      setReplyTo(null);
+    } else {
+      console.error('Failed to submit comment:', error?.message);
+    }
+  };
+
+  const buildThreadedComments = (comments) => {
+    const map = {};
+    const roots = [];
+
+    comments.forEach((c) => {
+      map[c.id] = { ...c, replies: [] };
+    });
+
+    comments.forEach((c) => {
+      if (c.parent_id) {
+        map[c.parent_id]?.replies.push(map[c.id]);
+      } else {
+        roots.push(map[c.id]);
+      }
+    });
+
+    return roots;
+  };
+
+  const threadedComments = buildThreadedComments(commentList);
+
+  const renderComments = (comments, depth = 0) => {
+    return comments.map((c) => (
+      <div key={c.id} style={{ marginLeft: depth * 20, marginBottom: '0.5rem' }}>
+        <p className="comment">
+          <strong>{c.profiles?.full_name || 'Unknown User'}</strong> at{' '}
+          {new Date(c.created_at).toLocaleString()}: {c.content}
+        </p>
+        <button className="reply-button" onClick={() => setReplyTo(c.id)}>
+          ↪️ Reply
+        </button>
+        {c.replies?.length > 0 && renderComments(c.replies, depth + 1)}
+      </div>
+    ));
+  };
 
   return (
     <div className="post-card">
-      {tag && <div className="post-tag">#{tag}</div>}
-      {image && <img src={image} alt="post" className="preview-image" />}
-
-      <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{content}</p>
-
-      <button onClick={onLike} className="like-button">
-        ❤️ {likes} {likes === 1 ? 'like' : 'likes'}
-      </button>
-
-      {/* EVENT EXTRAS */}
-      {tag === 'event' && (
-        <div style={{ marginTop: '1rem' }}>
-          <button className="gallery-button" onClick={() => setShowGallery(true)}>
-            📸 View Photos ({imageGallery.length})
-          </button>
-
-          <label className="upload-button">
-            ➕ Upload Photo
-            <input
-              type="file"
-              hidden
-              onChange={(e) => {
-                if (e.target.files[0]) onUploadPhoto(e.target.files[0]);
-              }}
-            />
-          </label>
-        </div>
-      )}
-
-      {/* COMMENTS */}
-      <div className="comment-section">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (commentText.trim()) {
-              onComment(`@you • ${commentText}`);
-              setCommentText('');
-            }
-          }}
-        >
-          <input
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder="Add a comment..."
-            className="comment-input"
-          />
-          <button type="submit" className="comment-submit">Post</button>
-        </form>
-
-        <div className="comment-list">
-          {comments.map((c, i) => (
-            <p key={i} className="comment">💬 {c}</p>
-          ))}
-        </div>
+      <div className="post-meta">
+        <strong>{authorName}</strong> • {new Date(createdAt).toLocaleString()}
       </div>
 
-      {/* GALLERY MODAL */}
-      {showGallery && (
-        <div className="modal-backdrop" onClick={() => setShowGallery(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>📸 Event Gallery</h3>
-            {imageGallery.length === 0 ? (
-              <p>No photos yet.</p>
-            ) : (
-              <div className="gallery-grid">
-                {imageGallery.map((img, i) => (
-                  <img key={i} src={img} alt={`event-${i}`} className="gallery-image" />
-                ))}
-              </div>
-            )}
-            <button onClick={() => setShowGallery(false)} className="comment-submit">Close</button>
-          </div>
-        </div>
+      <p style={{ fontSize: '1.1rem' }}>{content}</p>
+
+      {image && (
+        <img
+          src={image}
+          alt="post"
+          className="preview-image"
+          style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '1rem' }}
+        />
       )}
+
+      <div style={{ marginTop: '0.5rem' }}>
+        <button className="like-button" onClick={handleLike}>
+          {userHasLiked ? '❤️ Liked' : '🤍 Like'} • {likes}
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
+        <input
+          className="comment-input"
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+          placeholder={replyTo ? 'Replying...' : 'Add a comment'}
+        />
+        <button type="submit" className="comment-submit">Post</button>
+        {replyTo && (
+          <button
+            type="button"
+            className="cancel-reply"
+            onClick={() => setReplyTo(null)}
+          >
+            Cancel Reply
+          </button>
+        )}
+      </form>
+
+      <div className="comment-list" style={{ marginTop: '1rem' }}>
+        {renderComments(threadedComments)}
+      </div>
     </div>
   );
 }
