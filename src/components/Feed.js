@@ -30,7 +30,7 @@ function Feed() {
     const fetchPostsWithMeta = async () => {
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('*, profiles(full_name)')
+        .select('*') // removed profiles join
         .eq('approved', true)
         .order('created_at', { ascending: false });
 
@@ -41,11 +41,18 @@ function Feed() {
 
       const postsWithMeta = await Promise.all(
         (postsData || []).map(async (post) => {
+          // fetch profile name manually
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', post.user_id)
+            .single();
+
           const [likesRes, commentsRes] = await Promise.all([
             supabase.from('likes').select('*').eq('post_id', post.id),
             supabase
               .from('comments')
-              .select('*, profiles (full_name)')
+              .select('*, profiles(full_name)')
               .eq('post_id', post.id)
               .order('created_at', { ascending: true }),
           ]);
@@ -55,9 +62,10 @@ function Feed() {
 
           return {
             ...post,
+            authorName: profileData?.full_name || 'Unknown',
             likes: likeCount,
             comments: commentData,
-            userHasLiked: likesRes?.data?.some(like => like.user_id === user?.id),
+            userHasLiked: likesRes?.data?.some((like) => like.user_id === user?.id),
           };
         })
       );
@@ -137,7 +145,7 @@ function Feed() {
                 imageGallery={item.image_urls || []}
                 comments={item.comments}
                 user={user}
-                authorName={item.profiles?.full_name || 'Unknown'}
+                authorName={item.authorName}
                 createdAt={item.created_at}
               />
             );
@@ -161,7 +169,7 @@ function Feed() {
                 content={item.content}
                 eventTime={item.event_time}
                 image={item.image_urls?.[0] || null}
-                authorName={item.profiles?.full_name || 'Unknown'}
+                authorName={item.authorName}
                 createdAt={item.created_at}
               />
             );
@@ -171,10 +179,6 @@ function Feed() {
         })}
       </div>
 
-      <section className="calendar-section">
-        <h2>📅 Upcoming Events</h2>
-        <Calendar />
-      </section>
     </div>
   );
 }
