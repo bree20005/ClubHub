@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 import Post from './Post';
 import Poll from './Polls';
+import Event from './Event';
 import Calendar from './Calendar';
 import LikeButton from './LikeButton';
 import { useParams } from 'react-router-dom';
@@ -13,7 +14,6 @@ function Feed() {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [clubName, setClubName] = useState('');
 
-  // Load user
   useEffect(() => {
     const loadUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -23,16 +23,15 @@ function Feed() {
       }
       setUser(data.user);
     };
-
     loadUser();
   }, []);
 
-  // Load posts, likes, and comments
   useEffect(() => {
     const fetchPostsWithMeta = async () => {
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('*, profiles (full_name)')
+        .select('*, profiles(full_name)')
+        .eq('approved', true)
         .order('created_at', { ascending: false });
 
       if (postsError) {
@@ -43,11 +42,7 @@ function Feed() {
       const postsWithMeta = await Promise.all(
         (postsData || []).map(async (post) => {
           const [likesRes, commentsRes] = await Promise.all([
-            supabase
-              .from('likes')
-              .select('*')
-              .eq('post_id', post.id),
-
+            supabase.from('likes').select('*').eq('post_id', post.id),
             supabase
               .from('comments')
               .select('*, profiles (full_name)')
@@ -74,32 +69,6 @@ function Feed() {
       fetchPostsWithMeta();
     }
   }, [user]);
-
-  const handleLike = async (postId) => {
-    if (!user) return;
-
-    const { error } = await supabase.from('likes').insert({
-      post_id: postId,
-      user_id: user.id,
-    });
-
-    if (error) {
-      console.error('Error liking post:', error.message);
-      return;
-    }
-
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              likes: post.likes + 1,
-              userHasLiked: true,
-            }
-          : post
-      )
-    );
-  };
 
   const filteredPosts =
     selectedFilter === 'all'
@@ -137,7 +106,6 @@ function Feed() {
         </div>
       </header>
 
-      {/* Filter Buttons */}
       <div className="feed-filter">
         {['all', 'event', 'announcement', 'poll'].map((tag) => (
           <button
@@ -156,10 +124,9 @@ function Feed() {
         ))}
       </div>
 
-      {/* Posts */}
       <div className="feed-items">
         {filteredPosts.map((item) => {
-          if (['post', 'event', 'announcement'].includes(item.type)) {
+          if (item.type === 'post' || item.type === 'announcement') {
             return (
               <Post
                 key={item.id}
@@ -172,14 +139,6 @@ function Feed() {
                 user={user}
                 authorName={item.profiles?.full_name || 'Unknown'}
                 createdAt={item.created_at}
-                likeButton={
-                  <LikeButton
-                    postId={item.id}
-                    user={user}
-                    initialLiked={item.userHasLiked}
-                    initialCount={item.likes}
-                  />
-                }
               />
             );
           }
@@ -191,6 +150,19 @@ function Feed() {
                 id={item.id}
                 question={item.question}
                 options={item.options}
+              />
+            );
+          }
+
+          if (item.type === 'event') {
+            return (
+              <Event
+                key={item.id}
+                content={item.content}
+                eventTime={item.event_time}
+                image={item.image_urls?.[0] || null}
+                authorName={item.profiles?.full_name || 'Unknown'}
+                createdAt={item.created_at}
               />
             );
           }
