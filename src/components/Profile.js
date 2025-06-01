@@ -6,7 +6,7 @@ function ProfileHeader() {
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [clubs, setClubs] = useState([]);
-
+  
   useEffect(() => {
     const loadProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -27,20 +27,23 @@ function ProfileHeader() {
         console.error('Error fetching profile:', error.message);
       } else {
         setFullName(data.full_name || '');
-        setAvatarUrl(data.avatar_url || '');  // Start blank
+        setAvatarUrl(data.avatar_url || '');
       }
 
       const { data: memberships, error: membershipError } = await supabase
         .from('user_clubs')
-        .select('clubs(name, logo_url)')
+        .select('club_id, clubs(name, logo_url)')
         .eq('user_id', user.id);
+    
 
       if (membershipError) {
         console.error('Error fetching clubs:', membershipError.message);
       } else {
-        //setClubs(memberships.map((m) => m.clubs.name));
-        setClubs(memberships.map((m) => m.clubs));
-
+        setClubs(memberships.map((m) => ({
+          ...m.clubs,
+          id: m.club_id,
+          is_clicked: m.is_clicked,
+        })));
       }
     };
 
@@ -66,14 +69,16 @@ function ProfileHeader() {
       await supabase.from('profiles').upsert({ id: user.id, avatar_url: publicUrl.publicUrl });
     }
   };
+// this is for the checkmark to confirm that the user agrees with terms and conditions
 
+  //the header 3 needs to be fixed but it wont let me directly comment next to it
   return (
     <div>
       <div style={{ textAlign: 'center' }}>
         <h1 style={{ color: 'white' }}>My Profile</h1>
         <br />
-        <h3 style={{ color: '#1f0c44', fontSize: '30px' }}>
-          Welcome, {fullName || 'User'}!
+        <h3 style={{ color: '#1f0c44', fontSize: '30px' }}> 
+          Welcome, {fullName || 'User'}! 
         </h3>
         {avatarUrl ? (
           <img
@@ -94,9 +99,7 @@ function ProfileHeader() {
               color: '#555',
               fontSize: '14px',
             }}
-          >
-            No Image
-          </div>
+          />
         )}
         <br />
         <input type="file" onChange={handleAvatarUpload} style={{ marginTop: '10px' }} />
@@ -105,38 +108,44 @@ function ProfileHeader() {
       <div style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>
         <h3>My Clubs:</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
-        
-  {clubs.map((club, index) => (
-    <li //basically this is all linking up the club logos on profile page
-      key={index}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '6px',
-      }}> 
-      {club.logo_url ? (
-        <img
-          src={club.logo_url}
-          alt={`${club.name} logo`}
-          style={{
-            width: '40px',
-            height: '40px',
-            marginRight: '10px',
-            borderRadius: '5px',
-            objectFit: 'cover',
-          }}/>): (
-        <div style={{
-            width: '40px',
-            height: '40px',
-            marginRight: '10px',
-            borderRadius: '5px',
-          }}/>
-      )}
-      <span>{club.name}</span>
-    </li> 
-  ))}
-</ul>
+          {clubs.map((club, index) => (
+            <li
+              key={index}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '6px',
+              }}
+            >
+              {club.logo_url ? (
+                <img
+                  src={club.logo_url}
+                  alt={`${club.name} logo`}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    marginRight: '10px',
+                    borderRadius: '6px',
+                    objectFit: 'cover',
+                    cursor: 'pointer',
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    marginRight: '10px',
+                    borderRadius: '6px',
+                    backgroundColor: '#ccc',
+                  }}
+                />
+              )}
+              <span>{club.name}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
