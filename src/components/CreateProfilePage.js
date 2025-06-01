@@ -99,7 +99,7 @@ function CreateProfilePage() {
         />
         <input
           type="file"
-          accept="image/*"
+          accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.tiff,.svg,.heic,.heif"
           onChange={(e) => setFile(e.target.files[0])}
         />
         <button type="submit">Continue</button>

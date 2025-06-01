@@ -742,5 +742,30 @@ h1, h2, h3 {
   background-color: #357abd;
  }
  
+ .poll-bar-wrapper {
+  background-color: #eee;
+  height: 20px;
+  border-radius: 5px;
+  margin-top: 5px;
+  position: relative;
+}
+
+.poll-bar {
+  background-color: #4caf50;
+  height: 100%;
+  border-radius: 5px 0 0 5px;
+  transition: width 0.4s ease;
+}
+
+.poll-percent {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  font-size: 12px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
  
  

@@ -171,9 +171,14 @@ function Feed() {
 
           if (item.type === 'poll') {
             return (
-              <Poll key={item.id} question={item.question} options={item.options} />
+              <Poll
+                key={item.id}
+                id={item.id}
+                question={item.question}
+                options={item.options}
+              />
             );
-          }
+          }          
 
           return null;
         })}

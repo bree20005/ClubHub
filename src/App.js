@@ -1,5 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from './components/supabase';
+
 import Feed from './components/Feed';
 import Polls from './components/Polls';
 import Profile from './components/Profile';
@@ -12,6 +14,7 @@ import StartClubPage from './components/StartClubPage';
 import ClubSuccessPage from './components/ClubSuccessPage';
 import JoinClubPage from './components/JoinClubPage';
 import SidebarClubLogos from './components/SidebarClubLogos';
+
 import './index.css';
 import logo from './assets/logo.png';
 
@@ -43,6 +46,71 @@ function Sidebar({ onClubSelect, selectedClub }) {
   );
 }
 
+function AuthRedirect({ children }) {
+  const [loading, setLoading] = useState(true);
+  const [redirectPath, setRedirectPath] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const checkUserProfile = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
+      const userId = session.user.id;
+
+      // Check if user has a profile in the profiles table
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error || !profile) {
+        setRedirectPath('/create-profile');
+      } else {
+        setRedirectPath('/feed');
+      }
+
+      setLoading(false);
+    };
+
+    checkUserProfile();
+  }, []);
+
+  if (loading) return null;
+
+  if (redirectPath && (location.pathname === '/' || location.pathname === '/login')) {
+    return <Navigate to={redirectPath} />;
+  }
+
+  return children;
+}
+
+
+function ProtectedRoute({ children }) {
+  const [loading, setLoading] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setLoggedIn(!!session);
+      setLoading(false);
+    };
+    checkSession();
+  }, []);
+
+  if (loading) return null;
+
+  return loggedIn ? children : <Navigate to="/login" />;
+}
+
 function Layout() {
   const location = useLocation();
   const [selectedClub, setSelectedClub] = useState('');
@@ -60,9 +128,30 @@ function Layout() {
       )}
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/feed" element={<Feed selectedClub={selectedClub} setSelectedClub={setSelectedClub} />} />
+          <Route
+            path="/"
+            element={
+              <AuthRedirect>
+                <LoginPage />
+              </AuthRedirect>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <AuthRedirect>
+                <LoginPage />
+              </AuthRedirect>
+            }
+          />
+          <Route
+            path="/feed"
+            element={
+              <ProtectedRoute>
+                <Feed selectedClub={selectedClub} setSelectedClub={setSelectedClub} />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/create-profile" element={<CreateProfilePage />} />
           <Route path="/join-or-create-club" element={<JoinOrCreateClubPage />} />
           <Route path="/start-club" element={<StartClubPage />} />
