@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import { Link } from 'react-router-dom';
 
 function ProfileHeader() {
   const [user, setUser] = useState(null);
@@ -69,6 +70,23 @@ function ProfileHeader() {
   }, []);
   
 
+  const handleDeleteClub = async (clubId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this club?");
+    if (!confirmed) return;
+  
+    const { error } = await supabase
+      .from('user_clubs')
+      .delete()
+      .match({ user_id: user.id, club_id: clubId });
+  
+    if (error) {
+      alert('Error deleting club: ' + error.message);
+    } else {
+      setClubs(clubs.filter(c => c.id !== clubId));
+    }
+  };
+
+  
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -230,24 +248,81 @@ function ProfileHeader() {
                   </span>
                 </div>
 
-                {/* Right side: pill badge */}
-                <span
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '999px',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    backgroundColor: club.isAdmin ? '#1e3a8a' : '#dc2626',
-                    color: '#fff',
-                    whiteSpace: 'nowrap',
-                    transform: 'scale(0.9)'
-                  }}
-                >
-                  {club.isAdmin ? 'Admin' : 'Member'}
-                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              {/* Pill badge */}
+              <span
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '999px',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  backgroundColor: club.isAdmin ? '#1e3a8a' : '#dc2626',
+                  color: '#fff',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {club.isAdmin ? 'Admin' : 'Member'}
+              </span>
+
+              {/* Delete Club text */}
+              <div
+                style={{
+                  marginTop: '6px',
+                  fontSize: '0.75rem',
+                  color: '#dc2626',
+                  cursor: 'pointer',
+                  fontWeight: '400',
+                }}
+                onClick={() => handleDeleteClub(club.id)}
+              >
+                Delete club
+              </div>
+            </div>
               </li>
             ))}
           </ul>
+          {clubs.length === 0 && (
+        <div
+        className="plus-menu"
+        style={{
+          marginTop: '9rem', 
+          textAlign: 'center',
+          transform: 'scale(1.2)'
+        }}
+      >
+        <div
+          className="plus-options"
+          style={{
+            marginTop: '0.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+          }}
+        >
+          <Link
+            to="/join-club"
+            style={{
+              color: 'white', 
+              textDecoration: 'underline',
+              fontSize: '1rem',
+            }}
+          >
+            Join Club
+          </Link>
+          <Link
+            to="/start-club"
+            style={{
+              color: 'white', 
+              textDecoration: 'underline',
+              fontSize: '1rem',
+            }}
+          >
+            Start Club
+          </Link>
+        </div>
+      </div>
+      
+      )}
         </div>
       </div>
     </div>

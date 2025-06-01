@@ -39,8 +39,8 @@ function Sidebar({ onClubSelect, selectedClub }) {
       <div className="plus-menu">
         <div className="plus-icon">＋</div>
         <div className="plus-options">
-          <Link to="/join-club">Join a Club</Link>
-          <Link to="/start-club">Start a Club</Link>
+          <Link to="/join-club">Join Club</Link>
+          <Link to="/start-club">Start Club</Link>
         </div>
       </div>
     </nav>
