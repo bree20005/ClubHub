@@ -115,7 +115,7 @@ function Feed() {
       </header>
 
       <div className="feed-filter">
-        {['all', 'event', 'announcement', 'poll'].map((tag) => (
+        {['all', 'event', 'poll', 'post'].map((tag) => (
           <button
             key={tag}
             onClick={() => setSelectedFilter(tag)}
@@ -125,12 +125,12 @@ function Feed() {
               ? '🔁 All'
               : tag === 'event'
               ? '🗓️ Events'
-              : tag === 'announcement'
-              ? '📣 Announcements'
-              : '📊 Polls'}
-          </button>
-        ))}
-      </div>
+              : tag === 'poll'
+              ? '📊 Polls'
+              : '📝 Posts'}
+    </button>
+  ))}
+</div>
 
       <div className="feed-items">
         {filteredPosts.map((item) => {
