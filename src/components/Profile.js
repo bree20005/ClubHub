@@ -6,9 +6,7 @@ function ProfileHeader() {
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [clubs, setClubs] = useState([]);
-  const [clickedClub, setClickedClub] = useState(null);
-  const [acceptedConditions, setacceptedConditions] = useState(false);
-
+  
   useEffect(() => {
     const loadProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -72,21 +70,6 @@ function ProfileHeader() {
     }
   };
 // this is for the checkmark to confirm that the user agrees with terms and conditions
-  const sendConditionToServer = async (checked) => {
-    setacceptedConditions(checked);
-  
-    if (!user || !clickedClub) return;
-  
-    const { error } = await supabase
-        .from('user_clubs')
-        .update({ is_clicked: checked })
-        .match({ user_id: user.id, club_id: clickedClub.id });
-
-    if (error) {
-      console.error('Error updating is_clicked status:', error.message);
-      }
-
-  };
 
   //the header 3 needs to be fixed but it wont let me directly comment next to it
   return (
@@ -147,7 +130,6 @@ function ProfileHeader() {
                     objectFit: 'cover',
                     cursor: 'pointer',
                   }}
-                  onClick={() => setClickedClub(club)}
                 />
               ) : (
                 <div
@@ -165,51 +147,6 @@ function ProfileHeader() {
           ))}
         </ul>
       </div>
-
-      {/* clcik here and the terms and conditions pop up */}
-      {clickedClub && (
-        <div
-
-          onClick={async () => setClickedClub(null)}
-          style={{
-            position: 'fixed',
-            top: 0, left: 0,
-            width: '100vw', height: '100vh',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            zIndex: 1000
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: 'black',
-              padding: '20px',
-              borderRadius: '10px',
-              maxWidth: '300px',
-              width: '90%',
-              textAlign: 'center'
-            }}>
-            <img
-              src={clickedClub.logo_url}
-              alt={clickedClub.name}
-              style={{ width: '100px', height: '100px', borderRadius: '8px', marginBottom: '10px' }}/>
-            <h3>{clickedClub.name}</h3>
-
-            <label>
-              <input
-                type="checkbox"
-                checked={acceptedConditions}
-                onChange={(e) => {
-                  sendConditionToServer(e.target.checked);
-                  setClickedClub(prev => ({ ...prev, is_checked: e.target.checked }));
-                }}/>
-              {' '} I agree to the terms and conditions of {clickedClub.name} and agree to be kind, respectful, and abide by club rules or i am subjected to termination from ClubHub
-            </label><br />
-            <button onClick={() => setClickedClub(null)} style={{ marginTop: '10px' }}>Close</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
