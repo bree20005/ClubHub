@@ -21,6 +21,7 @@ function SidebarClubLogos() {
 
       if (!error && data) {
         const mapped = data.map((entry) => ({
+          id: entry.club_id,
           name: entry.clubs.name,
           logo: entry.clubs.logo_url,
         }));
@@ -35,12 +36,12 @@ function SidebarClubLogos() {
     <div className="sidebar-club-logos">
       {clubs.map((club) => (
         <img
-          key={club.name}
-          src={club.logo}
-          alt={club.name}
-          title={club.name}
-          className="club-logo-sidebar"
-          onClick={() => navigate('/feed')} // Or navigate to a club-specific route
+        key={club.id}
+        src={club.logo}
+        alt={club.name}
+        title={club.name}
+        className="club-logo-sidebar"
+        onClick={() => navigate(`/clubs/${club.id}`)} 
           style={{
             width: '40px',
             height: '40px',

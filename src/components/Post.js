@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 
-function Post({ id, content, tag, image, imageGallery = [], authorName, createdAt, user }) {
+function Post({ id, content, tag, image, imageGallery = [], authorName, createdAt, user, clubId }) {
   const [commentText, setCommentText] = useState('');
   const [commentList, setCommentList] = useState([]);
   const [replyTo, setReplyTo] = useState(null);
   const [likes, setLikes] = useState(0);
   const [userHasLiked, setUserHasLiked] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false); //for admin
 
   // Fetch comments
   useEffect(() => {
@@ -24,8 +25,26 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
       }
     };
 
+//checking if admin so we can delete the post if needed
+
+    const checkIfAdmin = async () => {
+      const { data, error } = await supabase
+        .from('clubs')
+        .select('created_by')
+        .eq('id', clubId)
+        .single();
+
+      if (!error && data) {
+        setIsAdmin(data.created_by === user?.id);
+      }
+    };
+
+    if (user && clubId) {
+      checkIfAdmin();
+    }
+
     fetchComments();
-  }, [id]);
+  }, [user, clubId, id]);
 
   // Fetch likes
   useEffect(() => {
@@ -152,6 +171,26 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
     ));
   };
 
+  const confirmDelete = () => {
+    return window.confirm("Are you sure you want to delete this post?");
+  };
+
+  const handleDeletePost = async () => {
+    if (!confirmDelete()) return;
+  
+    const { error } = await supabase
+      .from('posts')
+      .delete()
+      .eq('id', id);
+  
+    if (error) {
+      console.error('Failed to delete post:', error.message);
+    } else {
+      alert('Post deleted!');
+    }
+  };
+  
+
   return (
     <div className="post-card">
       <div className="post-meta">
@@ -168,6 +207,13 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
           style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '1rem' }}
         />
       )}
+
+      {isAdmin && (
+        <button onClick={handleDeletePost} className="delete-button">
+          🗑️
+        </button>
+      )}
+
 
       <div style={{ marginTop: '0.5rem' }}>
         <button className="like-button" onClick={handleLike}>

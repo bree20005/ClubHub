@@ -12,8 +12,9 @@ function Feed() {
   const [posts, setPosts] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [clubName, setClubName] = useState('');
+  const [rules, setRules] = useState('');
 
-  // Load user
+  // Load user and get the rules for the specific club
   useEffect(() => {
     const loadUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -21,11 +22,39 @@ function Feed() {
         console.error('User load error:', error.message);
         return;
       }
+  
       setUser(data.user);
-    };
+  
+      // Fetch the user's club
+      const { data: userClub, error: userClubError } = await supabase
+        .from('user_clubs')
+        .select('club_id')
+        .eq('user_id', data.user.id)
+        .single();
+  
+      if (userClubError || !userClub) {
+        console.error('User club fetch error:', userClubError);
+        return;
+      }
 
+      const { data: clubData, error: rulesError } = await supabase
+        .from('clubs')
+        .select('rules')
+        .eq('id', userClub.club_id)
+        .single();
+  
+      if (rulesError || !clubData) {
+        console.error('Rules fetch error:', rulesError);
+        return;
+      }
+
+      setRules(clubData.rules);
+    };
+  
     loadUser();
   }, []);
+  
+
 
   // Load posts, likes, and comments
   useEffect(() => {
@@ -113,6 +142,7 @@ function Feed() {
           <div>
             <h1>👋 Welcome to your {clubName || 'Club'} Hub</h1>
             <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
+            <p>Remeber the rules of {clubName}: {rules} !!!</p>
           </div>
           {!user ? (
             <button
