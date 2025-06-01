@@ -8,6 +8,16 @@ body {
   height: 100%;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 a {
   color: #64ffda;
   text-decoration: none;
@@ -607,10 +617,9 @@ h1, h2, h3 {
   transition: all 0.2s ease;
 }
 
-.login-page {
-  padding: 0;
+/* .login-page {
   position: relative;
-  background-image: url('./assets/login_background.png');
+  background-image: url('components/assets/login_background.png');
   background-size: cover;
   background-position: center;
   height: 100vh;
@@ -621,10 +630,9 @@ h1, h2, h3 {
   color: white;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
   text-align: center;
-  padding: 0 20px;
+  padding-top: 100px;
   overflow: hidden;
- }
- 
+}
  
  .login-page::before {
   content: '';
@@ -635,8 +643,46 @@ h1, h2, h3 {
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 0;
- }
- 
+ } */
+
+ .login-page {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding-top: 100px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.login-page::before {
+  content: '';
+  position: absolute;
+  top: 0px; 
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: url('components/assets/login_background.png');
+  background-size: cover;
+  background-position: center top;
+  z-index: -2;
+}
+
+.login-page::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(55, 52, 52, 0.8); 
+  z-index: -1;
+}
+
  
  .login-page h1,
  .login-page .google-button {
@@ -669,78 +715,93 @@ h1, h2, h3 {
   background-color: #f1f1f1;
  }
  
- 
  .profile-form {
-  max-width: 400px;
-  margin: 4rem auto;
+  max-width: 420px;
+  margin: 5rem auto;
   padding: 2rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   text-align: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
- }
- 
- 
- .profile-form h1 {
-  color: #222;
+}
+
+.profile-form h1 {
+  color: #1f0c44;
   margin-bottom: 1.5rem;
-  font-weight: 700;
-  font-size: 2rem;
- }
- 
- 
- .profile-form form {
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.profile-form form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
- }
- 
- 
- .profile-form input[type="text"] {
-  padding: 1.5rem 1rem;
-  font-size: 1.3rem;
-  border: 2px solid #ddd;
+  gap: 1.2rem;
+  text-align: left;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="file"] {
+  padding: 1rem;
+  font-size: 1rem;
+  border: 2px solid #ccc;
   border-radius: 8px;
-  transition: border-color 0.3s ease;
   width: 100%;
   box-sizing: border-box;
- }
- 
- 
- .profile-form input[type="text"]:focus {
+  height: 48px; 
+}
+
+.profile-form input[type="file"] {
+  height: 48px;
+  background-color: white;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.profile-form input[type="text"]:focus {
   outline: none;
   border-color: #4a90e2;
- }
- 
- 
- .profile-form input[type="file"] {
-  border: 2px solid #ddd;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+.upload-button {
+  display: inline-block;
+  background-color: #b09eda;
+  color: rgb(0, 0, 0);
+  padding: 0.5rem 1.2rem;
   border-radius: 8px;
-  padding: 0.75rem 1rem;
   font-size: 1rem;
+  font-weight: normal;
+  text-align: center;
   cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
- }
- 
- 
- .profile-form button {
+  transition: background-color 0.3s ease;
+  margin: 0 auto; 
+}
+
+.upload-button:hover {
+  opacity: 80%;
+  cursor: pointer;
+}
+
+.profile-form button {
   background-color: #1f0c44;
   color: white;
   border: none;
-  padding: 0.9rem;
-  border-radius: 8px;
+  padding: 1rem;
+  border-radius: 10px;
   font-weight: 600;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
- }
- 
- 
- .profile-form button:hover {
-  background-color: #357abd;
- }
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.profile-form button:hover {
+  background-color: #4a2c91;
+  transform: translateY(-1px);
+}
+
+
  
  .poll-bar-wrapper {
   background-color: #eee;

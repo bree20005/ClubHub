@@ -49,16 +49,38 @@ function LoginPage() {
   };
 
   return (
-    // <div className="login-page">
-    //   <h1>Login / Sign Up</h1>
-    //   <button onClick={handleLogin}>Continue with Google</button>
-    // </div>
-    <div className="login-page">
-      <h1>Join Your Community</h1>
-      <button className="google-button" onClick={handleLogin}>
-        Continue with Google
-      </button>
-    </div>
+    <>
+  <div className="login-page">
+    <h1
+      style={{
+        color: 'white',
+        fontSize: '48px',
+        marginBottom: '8px',
+        textShadow: '0 0 6px rgba(155, 89, 182, 0.5)',
+      }}
+    >
+      Welcome to ClubHub
+    </h1>
+    <h2
+      style={{
+        color: 'white',
+        fontSize: '18px',
+        fontWeight: 'normal',
+        marginTop: 0,
+        marginBottom: '20px',
+        textShadow: '0 0 4px rgba(0, 0, 0, 0.5)',
+      }}
+    >
+      Join Your Community
+    </h2>
+    <button className="google-button" onClick={handleLogin}>
+      Continue with Google
+    </button>
+  </div>
+</>
+
+  
+
   );
  }
  

@@ -17,7 +17,7 @@ import SidebarClubLogos from './components/SidebarClubLogos';
 import LikeButton from './components/LikeButton.js';
 
 import './index.css';
-import logo from './assets/logo.png';
+import logo from './components/assets/logo.png';
 
 const Logo = ({ logo }) => {
   const navigate = useNavigate();
