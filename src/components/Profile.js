@@ -73,81 +73,166 @@ function ProfileHeader() {
 
   //the header 3 needs to be fixed but it wont let me directly comment next to it
   return (
-    <div>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{ color: 'white' }}>My Profile</h1>
-        <br />
-        <h3 style={{ color: '#1f0c44', fontSize: '30px' }}> 
-          Welcome, {fullName || 'User'}! 
-        </h3>
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="Profile"
-            className="profile-photo"
-            style={{ borderRadius: '50%', width: '120px', height: '120px' }}
-          />
-        ) : (
-          <div
-            style={{
-              width: '120px',
-              height: '120px',
-              borderRadius: '50%',
-              backgroundColor: '#ccc',
-              display: 'inline-block',
-              lineHeight: '120px',
-              color: '#555',
-              fontSize: '14px',
-            }}
-          />
-        )}
-        <br />
-        <input type="file" onChange={handleAvatarUpload} style={{ marginTop: '10px' }} />
-      </div>
+    <div className="profile-page">
+  <div className="profile-left">
+    <h1 style={{ color: 'white', textAlign: 'center' }}>Welcome, {fullName || 'User'}!</h1>
+    {avatarUrl ? (
+      <img
+        src={avatarUrl}
+        alt="Profile"
+        className="profile-photo"
+        style={{ borderRadius: '50%', width: '120px', height: '120px', display: 'block', margin: '0 auto' }}
+      />
+    ) : (
+      <div
+        style={{
+          width: '120px',
+          height: '120px',
+          borderRadius: '50%',
+          backgroundColor: '#ccc',
+          margin: '0 auto',
+          lineHeight: '120px',
+          color: '#555',
+          fontSize: '14px',
+          textAlign: 'center',
+        }}
+      />
+    )}
+    <label
+      htmlFor="avatar-upload"
+      className="edit-picture"
+      style={{
+        display: 'block',
+        marginTop: '8px',
+        color: '#121212',
+        fontSize: '0.85rem',
+        textAlign: 'center',
+        cursor: 'pointer',
+        textDecoration: 'underline',
+      }}
+    >
+      Edit Picture
+    </label>
+    <input
+      id="avatar-upload"
+      type="file"
+      onChange={handleAvatarUpload}
+      style={{ display: 'none' }}
+    />
+  </div>
 
-      <div style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>
-        <h3>My Clubs:</h3>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {clubs.map((club, index) => (
-            <li
-              key={index}
+  <div className="profile-right">
+    <h3 style={{ marginBottom: '1rem', color: '#222' }}>My Clubs:</h3>
+    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+      {clubs.map((club, index) => (
+        <li key={index} className="club-card" style={{ cursor: 'pointer' }}>
+          {club.logo_url ? (
+            <img
+              src={club.logo_url}
+              alt={`${club.name} logo`}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '6px',
+                width: '36px',
+                height: '36px',
+                marginRight: '12px',
+                borderRadius: '6px',
+                objectFit: 'cover',
+                flexShrink: 0,
               }}
-            >
-              {club.logo_url ? (
-                <img
-                  src={club.logo_url}
-                  alt={`${club.name} logo`}
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    marginRight: '10px',
-                    borderRadius: '6px',
-                    objectFit: 'cover',
-                    cursor: 'pointer',
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    marginRight: '10px',
-                    borderRadius: '6px',
-                    backgroundColor: '#ccc',
-                  }}
-                />
-              )}
-              <span>{club.name}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+            />
+          ) : (
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                marginRight: '12px',
+                borderRadius: '6px',
+                backgroundColor: '#ccc',
+                flexShrink: 0,
+              }}
+            />
+          )}
+          <span style={{ fontSize: '1.1rem', color: '#333', fontWeight: '600' }}>{club.name}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+    // <div>
+    //   <div style={{ textAlign: 'center' }}>
+    //     <h1 style={{ color: 'white' }}>My Profile</h1>
+    //     <br />
+    //     <h3 style={{ color: '#1f0c44', fontSize: '30px' }}> 
+    //       Welcome, {fullName || 'User'}! 
+    //     </h3>
+    //     {avatarUrl ? (
+    //       <img
+    //         src={avatarUrl}
+    //         alt="Profile"
+    //         className="profile-photo"
+    //         style={{ borderRadius: '50%', width: '120px', height: '120px' }}
+    //       />
+    //     ) : (
+    //       <div
+    //         style={{
+    //           width: '120px',
+    //           height: '120px',
+    //           borderRadius: '50%',
+    //           backgroundColor: '#ccc',
+    //           display: 'inline-block',
+    //           lineHeight: '120px',
+    //           color: '#555',
+    //           fontSize: '14px',
+    //         }}
+    //       />
+    //     )}
+    //     <br />
+    //     <input type="file" onChange={handleAvatarUpload} style={{ marginTop: '10px' }} />
+    //   </div>
+
+    //   <div style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>
+    //     <h3>My Clubs:</h3>
+    //     <ul style={{ listStyle: 'none', padding: 0 }}>
+    //       {clubs.map((club, index) => (
+    //         <li
+    //           key={index}
+    //           style={{
+    //             display: 'flex',
+    //             alignItems: 'center',
+    //             justifyContent: 'center',
+    //             padding: '6px',
+    //           }}
+    //         >
+    //           {club.logo_url ? (
+    //             <img
+    //               src={club.logo_url}
+    //               alt={`${club.name} logo`}
+    //               style={{
+    //                 width: '36px',
+    //                 height: '36px',
+    //                 marginRight: '10px',
+    //                 borderRadius: '6px',
+    //                 objectFit: 'cover',
+    //                 cursor: 'pointer',
+    //               }}
+    //             />
+    //           ) : (
+    //             <div
+    //               style={{
+    //                 width: '36px',
+    //                 height: '36px',
+    //                 marginRight: '10px',
+    //                 borderRadius: '6px',
+    //                 backgroundColor: '#ccc',
+    //               }}
+    //             />
+    //           )}
+    //           <span>{club.name}</span>
+    //         </li>
+    //       ))}
+    //     </ul>
+    //   </div>
+    // </div>
   );
 }
 
