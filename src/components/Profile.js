@@ -6,6 +6,8 @@ function ProfileHeader() {
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [clubs, setClubs] = useState([]);
+  const [clickedClub, setClickedClub] = useState(null);
+  const [acceptedConditions, setacceptedConditions] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -27,20 +29,23 @@ function ProfileHeader() {
         console.error('Error fetching profile:', error.message);
       } else {
         setFullName(data.full_name || '');
-        setAvatarUrl(data.avatar_url || '');  // Start blank
+        setAvatarUrl(data.avatar_url || '');
       }
 
       const { data: memberships, error: membershipError } = await supabase
         .from('user_clubs')
-        .select('clubs(name, logo_url)')
+        .select('club_id, clubs(name, logo_url)')
         .eq('user_id', user.id);
+    
 
       if (membershipError) {
         console.error('Error fetching clubs:', membershipError.message);
       } else {
-        //setClubs(memberships.map((m) => m.clubs.name));
-        setClubs(memberships.map((m) => m.clubs));
-
+        setClubs(memberships.map((m) => ({
+          ...m.clubs,
+          id: m.club_id,
+          is_clicked: m.is_clicked,
+        })));
       }
     };
 
@@ -66,14 +71,31 @@ function ProfileHeader() {
       await supabase.from('profiles').upsert({ id: user.id, avatar_url: publicUrl.publicUrl });
     }
   };
+// this is for the checkmark to confirm that the user agrees with terms and conditions
+  const sendConditionToServer = async (checked) => {
+    setacceptedConditions(checked);
+  
+    if (!user || !clickedClub) return;
+  
+    const { error } = await supabase
+        .from('user_clubs')
+        .update({ is_clicked: checked })
+        .match({ user_id: user.id, club_id: clickedClub.id });
 
+    if (error) {
+      console.error('Error updating is_clicked status:', error.message);
+      }
+
+  };
+
+  //the header 3 needs to be fixed but it wont let me directly comment next to it
   return (
     <div>
       <div style={{ textAlign: 'center' }}>
         <h1 style={{ color: 'white' }}>My Profile</h1>
         <br />
-        <h3 style={{ color: '#1f0c44', fontSize: '30px' }}>
-          Welcome, {fullName || 'User'}!
+        <h3 style={{ color: '#1f0c44', fontSize: '30px' }}> 
+          Welcome, {fullName || 'User'}! 
         </h3>
         {avatarUrl ? (
           <img
@@ -94,9 +116,7 @@ function ProfileHeader() {
               color: '#555',
               fontSize: '14px',
             }}
-          >
-            No Image
-          </div>
+          />
         )}
         <br />
         <input type="file" onChange={handleAvatarUpload} style={{ marginTop: '10px' }} />
@@ -105,39 +125,91 @@ function ProfileHeader() {
       <div style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>
         <h3>My Clubs:</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
-        
-  {clubs.map((club, index) => (
-    <li //basically this is all linking up the club logos on profile page
-      key={index}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '6px',
-      }}> 
-      {club.logo_url ? (
-        <img
-          src={club.logo_url}
-          alt={`${club.name} logo`}
-          style={{
-            width: '40px',
-            height: '40px',
-            marginRight: '10px',
-            borderRadius: '5px',
-            objectFit: 'cover',
-          }}/>): (
-        <div style={{
-            width: '40px',
-            height: '40px',
-            marginRight: '10px',
-            borderRadius: '5px',
-          }}/>
-      )}
-      <span>{club.name}</span>
-    </li> 
-  ))}
-</ul>
+          {clubs.map((club, index) => (
+            <li
+              key={index}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '6px',
+              }}
+            >
+              {club.logo_url ? (
+                <img
+                  src={club.logo_url}
+                  alt={`${club.name} logo`}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    marginRight: '10px',
+                    borderRadius: '6px',
+                    objectFit: 'cover',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setClickedClub(club)}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    marginRight: '10px',
+                    borderRadius: '6px',
+                    backgroundColor: '#ccc',
+                  }}
+                />
+              )}
+              <span>{club.name}</span>
+            </li>
+          ))}
+        </ul>
       </div>
+
+      {/* clcik here and the terms and conditions pop up */}
+      {clickedClub && (
+        <div
+
+          onClick={async () => setClickedClub(null)}
+          style={{
+            position: 'fixed',
+            top: 0, left: 0,
+            width: '100vw', height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex', justifyContent: 'center', alignItems: 'center',
+            zIndex: 1000
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: 'black',
+              padding: '20px',
+              borderRadius: '10px',
+              maxWidth: '300px',
+              width: '90%',
+              textAlign: 'center'
+            }}>
+            <img
+              src={clickedClub.logo_url}
+              alt={clickedClub.name}
+              style={{ width: '100px', height: '100px', borderRadius: '8px', marginBottom: '10px' }}/>
+            <h3>{clickedClub.name}</h3>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={acceptedConditions}
+                onChange={(e) => {
+                  sendConditionToServer(e.target.checked);
+                  setClickedClub(prev => ({ ...prev, is_checked: e.target.checked }));
+                }}/>
+              {' '} I agree to the terms and conditions of {clickedClub.name} and agree to be kind, respectful, and abide by club rules or i am subjected to termination from ClubHub
+            </label><br />
+            <button onClick={() => setClickedClub(null)} style={{ marginTop: '10px' }}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
