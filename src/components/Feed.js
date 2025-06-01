@@ -91,29 +91,6 @@ function Feed() {
             <h1>👋 Welcome to your {clubName || 'Club'} Hub</h1>
             <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
           </div>
-          {/* <div style={{ position: 'relative' }}>
-            {!user ? (
-              <button
-                className="login-button"
-                onClick={() =>
-                  supabase.auth.signInWithOAuth({ provider: 'google' })
-                }
-              >
-                Login with Google
-              </button>
-            ) : (
-              // <button
-              //   className="login-button"
-              //   onClick={async () => {
-              //     await supabase.auth.signOut();
-              //     window.location.reload();
-              //   }}
-              // >
-              //   Logout
-              // </button>
-              null
-            )}
-          </div> */}
         </div>
       </header>
 
