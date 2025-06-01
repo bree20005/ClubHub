@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #0a192f;
+  background-color: #ffffff;
   color: #ffffff;
   height: 100%;
 }
@@ -74,7 +74,7 @@ h1, h2, h3 {
 /* Main content */
 .main-content {
   flex-grow: 1;
-  background-color: #8569a8;
+  background-color: #8869ae;
   padding: 30px;
   overflow-y: auto;
 }
@@ -110,19 +110,6 @@ h1, h2, h3 {
   margin-bottom: 10px;
   width: 100%;
 }
-
-/* .poll-card button {
-  background-color: #ae9cc3;
-  color: #1f2c3f;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%; 
-  box-sizing: border-box;
-  text-align: left; 
-} */
 
 .poll-card button {
   background-color: #ae9cc3;
@@ -265,6 +252,41 @@ h1, h2, h3 {
   font-weight: bold;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.login-form button {
+  padding: 0.6rem 1.2rem;
+  background-color: #ae9cc3;
+  color: #0a192f;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-button {
+  padding: 0.6rem 1.2rem;
+  background-color: #ae9cc3;
+  color: #0a192f;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  padding: 0.6rem 1.2rem;
+  background-color: #ae9cc3;
+  color: #0a192f;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  opacity: 70%;
 }
 
 
@@ -693,34 +715,6 @@ h1, h2, h3 {
   transform: scale(1.1);
   transition: all 0.2s ease;
 }
-
-/* .login-page {
-  position: relative;
-  background-image: url('components/assets/login_background.png');
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
-  text-align: center;
-  padding-top: 100px;
-  overflow: hidden;
-}
- 
- .login-page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 0;
- } */
 
  .login-page {
   position: relative;
