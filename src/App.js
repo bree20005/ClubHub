@@ -14,6 +14,7 @@ import StartClubPage from './components/StartClubPage';
 import ClubSuccessPage from './components/ClubSuccessPage';
 import JoinClubPage from './components/JoinClubPage';
 import SidebarClubLogos from './components/SidebarClubLogos';
+import LikeButton from './components/LikeButton.js';
 
 import './index.css';
 import logo from './assets/logo.png';
@@ -157,6 +158,7 @@ function Layout() {
           <Route path="/start-club" element={<StartClubPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/polls" element={<Polls />} />
+          <Route path="/LikeButton" element={<LikeButton />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/create" element={<CreateContentPage />} />
           <Route path="/club-success" element={<ClubSuccessPage />} />

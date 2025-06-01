@@ -766,6 +766,26 @@ h1, h2, h3 {
   display: flex;
   align-items: center;
 }
+.comment {
+  margin-bottom: 4px;
+}
+
+.reply-button {
+  font-size: 0.8rem;
+  margin-left: 4px;
+  background: none;
+  border: none;
+  color: #0077cc;
+  cursor: pointer;
+}
+
+.cancel-reply {
+  background: none;
+  border: none;
+  color: crimson;
+  margin-left: 8px;
+  cursor: pointer;
+}
 
  
  

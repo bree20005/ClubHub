@@ -3,6 +3,7 @@ import { supabase } from './supabase';
 import Post from './Post';
 import Poll from './Polls';
 import Calendar from './Calendar';
+import LikeButton from './LikeButton';
 import { useParams } from 'react-router-dom';
 
 function Feed() {
@@ -15,72 +16,90 @@ function Feed() {
   // Load user
   useEffect(() => {
     const loadUser = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
+      const { data, error } = await supabase.auth.getUser();
       if (error) {
         console.error('User load error:', error.message);
         return;
       }
-
-      setUser(user);
+      setUser(data.user);
     };
 
     loadUser();
   }, []);
+
+  // Load posts, likes, and comments
   useEffect(() => {
-    const fetchPosts = async () => {
-      const { data: posts, error } = await supabase
+    const fetchPostsWithMeta = async () => {
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, profiles (full_name)')
         .order('created_at', { ascending: false });
-  
-      if (error) {
-        console.error('Error loading posts:', error.message);
-      } else {
-        console.log('Fetched posts:', posts);  // ✅ Add this
-        setPosts(posts || []);
+
+      if (postsError) {
+        console.error('Error loading posts:', postsError.message);
+        return;
       }
+
+      const postsWithMeta = await Promise.all(
+        (postsData || []).map(async (post) => {
+          const [likesRes, commentsRes] = await Promise.all([
+            supabase
+              .from('likes')
+              .select('*')
+              .eq('post_id', post.id),
+
+            supabase
+              .from('comments')
+              .select('*, profiles (full_name)')
+              .eq('post_id', post.id)
+              .order('created_at', { ascending: true }),
+          ]);
+
+          const likeCount = likesRes?.data?.length ?? 0;
+          const commentData = commentsRes?.data ?? [];
+
+          return {
+            ...post,
+            likes: likeCount,
+            comments: commentData,
+            userHasLiked: likesRes?.data?.some(like => like.user_id === user?.id),
+          };
+        })
+      );
+
+      setPosts(postsWithMeta);
     };
-  
-    fetchPosts();
-  }, []);
-  
-  // // Load posts for selected club
-  // useEffect(() => {
-  //   const fetchPosts = async () => {
-  //     if (!clubId) return;
 
-  //     const { data: club, error: clubError } = await supabase
-  //       .from('clubs')
-  //       .select('id, name')
-  //       .eq('id', clubId)
-  //       .single();
+    if (user) {
+      fetchPostsWithMeta();
+    }
+  }, [user]);
 
-  //     if (clubError) {
-  //       console.error('Error fetching club:', clubError.message);
-  //       return;
-  //     }
+  const handleLike = async (postId) => {
+    if (!user) return;
 
-  //     setClubName(club.name);
+    const { error } = await supabase.from('likes').insert({
+      post_id: postId,
+      user_id: user.id,
+    });
 
-  //     const { data: posts, error: postError } = await supabase
-  //       .from('posts')
-  //       .select('*')
-  //       .eq('club_id', club.id)
-  //       .order('created_at', { ascending: false });
+    if (error) {
+      console.error('Error liking post:', error.message);
+      return;
+    }
 
-  //     if (postError) {
-  //       console.error('Error loading posts:', postError.message);
-  //     } else {
-  //       setPosts(posts || []);
-  //     }
-  //   };
-
-  //   fetchPosts();
-  // }, [clubId]);
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              likes: post.likes + 1,
+              userHasLiked: true,
+            }
+          : post
+      )
+    );
+  };
 
   const filteredPosts =
     selectedFilter === 'all'
@@ -139,32 +158,28 @@ function Feed() {
 
       {/* Posts */}
       <div className="feed-items">
-        {filteredPosts.map((item, index) => {
+        {filteredPosts.map((item) => {
           if (['post', 'event', 'announcement'].includes(item.type)) {
             return (
               <Post
                 key={item.id}
+                id={item.id}
                 content={item.content}
                 tag={item.tag}
-                image={item.image_urls?.[0]} // Updated to use first image in array
+                image={item.image_urls?.[0] || null}
                 imageGallery={item.image_urls || []}
-                likes={item.likes}
                 comments={item.comments}
-                onLike={() => {
-                  const updatedPost = { ...item, likes: item.likes + 1 };
-                  const newPosts = [...posts];
-                  newPosts[index] = updatedPost;
-                  setPosts(newPosts);
-                }}
-                onComment={(newComment) => {
-                  const updatedPost = {
-                    ...item,
-                    comments: [...(item.comments || []), newComment],
-                  };
-                  const newPosts = [...posts];
-                  newPosts[index] = updatedPost;
-                  setPosts(newPosts);
-                }}
+                user={user}
+                authorName={item.profiles?.full_name || 'Unknown'}
+                createdAt={item.created_at}
+                likeButton={
+                  <LikeButton
+                    postId={item.id}
+                    user={user}
+                    initialLiked={item.userHasLiked}
+                    initialCount={item.likes}
+                  />
+                }
               />
             );
           }
@@ -178,7 +193,7 @@ function Feed() {
                 options={item.options}
               />
             );
-          }          
+          }
 
           return null;
         })}
