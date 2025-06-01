@@ -91,19 +91,27 @@ function CreateProfilePage() {
     <div className="profile-form">
       <h1>Create Your Profile</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder="Full Name"
-          required
-        />
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.tiff,.svg,.heic,.heif"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
-        <button type="submit">Continue</button>
-      </form>
+  <input
+    type="text"
+    value={fullName}
+    onChange={(e) => setFullName(e.target.value)}
+    placeholder="Full Name"
+    required
+  />
+
+  <label className="upload-button">
+    Upload Headshot
+    <input
+      type="file"
+      accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.tiff,.svg,.heic,.heif"
+      onChange={(e) => setFile(e.target.files[0])}
+      hidden
+    />
+  </label>
+
+  <button type="submit">Continue</button>
+</form>
+
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 import Post from './Post';
 import Poll from './Polls';
+import Event from './Event';
 import Calendar from './Calendar';
 import LikeButton from './LikeButton';
 import { useParams } from 'react-router-dom';
@@ -14,7 +15,7 @@ function Feed() {
   const [clubName, setClubName] = useState('');
   const [rules, setRules] = useState('');
 
-  // Load user and get the rules for the specific club
+  // Load user
   useEffect(() => {
     const loadUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -50,20 +51,18 @@ function Feed() {
 
       setRules(clubData.rules);
     };
-  
+
     loadUser();
   }, []);
   
 
 
-  // Load posts, likes, and comments
   useEffect(() => {
     const fetchPostsWithMeta = async () => {
       const { data: postsData, error: postsError } = await supabase
-            .from('posts')
-            .select('*, profiles (full_name)')
-            .eq('club_id', clubId)
-            .order('created_at', { ascending: false });
+        .from('posts')
+        .select('*, profiles (full_name)')
+        .order('created_at', { ascending: false });
 
 
       if (postsError) {
@@ -73,15 +72,18 @@ function Feed() {
 
       const postsWithMeta = await Promise.all(
         (postsData || []).map(async (post) => {
-          const [likesRes, commentsRes] = await Promise.all([
-            supabase
-              .from('likes')
-              .select('*')
-              .eq('post_id', post.id),
+          // fetch profile name manually
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', post.user_id)
+            .single();
 
+          const [likesRes, commentsRes] = await Promise.all([
+            supabase.from('likes').select('*').eq('post_id', post.id),
             supabase
               .from('comments')
-              .select('*, profiles (full_name)')
+              .select('*, profiles(full_name)')
               .eq('post_id', post.id)
               .order('created_at', { ascending: true }),
           ]);
@@ -91,9 +93,10 @@ function Feed() {
 
           return {
             ...post,
+            authorName: profileData?.full_name || 'Unknown',
             likes: likeCount,
             comments: commentData,
-            userHasLiked: likesRes?.data?.some(like => like.user_id === user?.id),
+            userHasLiked: likesRes?.data?.some((like) => like.user_id === user?.id),
           };
         })
       );
@@ -105,32 +108,6 @@ function Feed() {
       fetchPostsWithMeta();
     }
   }, [user]);
-
-  const handleLike = async (postId) => {
-    if (!user) return;
-
-    const { error } = await supabase.from('likes').insert({
-      post_id: postId,
-      user_id: user.id,
-    });
-
-    if (error) {
-      console.error('Error liking post:', error.message);
-      return;
-    }
-
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              likes: post.likes + 1,
-              userHasLiked: true,
-            }
-          : post
-      )
-    );
-  };
 
   const filteredPosts =
     selectedFilter === 'all'
@@ -146,32 +123,11 @@ function Feed() {
             <p>Stay in the loop with polls, events, and updates from your favorite orgs.</p>
             <h2>Remeber the rules set by your club moderators: {rules} !!!</h2>
           </div>
-          {!user ? (
-            <button
-              className="login-button"
-              onClick={() =>
-                supabase.auth.signInWithOAuth({ provider: 'google' })
-              }
-            >
-              Login with Google
-            </button>
-          ) : (
-            <button
-              className="login-button"
-              onClick={async () => {
-                await supabase.auth.signOut();
-                window.location.reload();
-              }}
-            >
-              Logout
-            </button>
-          )}
         </div>
       </header>
 
-      {/* Filter Buttons */}
       <div className="feed-filter">
-        {['all', 'event', 'announcement', 'poll'].map((tag) => (
+        {['all', 'event', 'poll', 'post'].map((tag) => (
           <button
             key={tag}
             onClick={() => setSelectedFilter(tag)}
@@ -181,17 +137,16 @@ function Feed() {
               ? '🔁 All'
               : tag === 'event'
               ? '🗓️ Events'
-              : tag === 'announcement'
-              ? '📣 Announcements'
-              : '📊 Polls'}
-          </button>
-        ))}
-      </div>
+              : tag === 'poll'
+              ? '📊 Polls'
+              : '📝 Posts'}
+    </button>
+  ))}
+</div>
 
-      {/* Posts */}
       <div className="feed-items">
         {filteredPosts.map((item) => {
-          if (['post', 'event', 'announcement'].includes(item.type)) {
+          if (item.type === 'post' || item.type === 'announcement') {
             return (
               <Post
                 key={item.id}
@@ -202,16 +157,8 @@ function Feed() {
                 imageGallery={item.image_urls || []}
                 comments={item.comments}
                 user={user}
-                authorName={item.profiles?.full_name || 'Unknown'}
+                authorName={item.authorName}
                 createdAt={item.created_at}
-                likeButton={
-                  <LikeButton
-                    postId={item.id}
-                    user={user}
-                    initialLiked={item.userHasLiked}
-                    initialCount={item.likes}
-                  />
-                }
               />
             );
           }
@@ -227,14 +174,23 @@ function Feed() {
             );
           }
 
+          if (item.type === 'event') {
+            return (
+              <Event
+                key={item.id}
+                content={item.content}
+                eventTime={item.event_time}
+                image={item.image_urls?.[0] || null}
+                authorName={item.authorName}
+                createdAt={item.created_at}
+              />
+            );
+          }
+
           return null;
         })}
       </div>
 
-      <section className="calendar-section">
-        <h2>📅 Upcoming Events</h2>
-        <Calendar />
-      </section>
     </div>
   );
 }
