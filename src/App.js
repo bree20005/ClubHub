@@ -29,68 +29,96 @@ const Logo = ({ logo }) => {
 function ProfileDropdown({ avatarUrl, onLogout }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const [hovered, setHovered] = useState(false);
+let hoverTimeout;
+
+const handleMouseEnter = () => {
+  clearTimeout(hoverTimeout);
+  setHovered(true);
+};
+
+const handleMouseLeave = () => {
+  hoverTimeout = setTimeout(() => setHovered(false), 200); // Delay to allow movement
+};
 
   return (
-    <div style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 1000 }}>
-      <div style={{ cursor: 'pointer' }} onClick={() => setOpen(!open)}>
-        <img
-          src={avatarUrl}
-          alt="Avatar"
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            objectFit: 'cover',
-            border: '2px solid #fff',
-            boxShadow: '0 0 5px rgba(0,0,0,0.1)',
-          }}
-        />
-      </div>
+    <div
+  style={{
+    position: 'fixed',
+    top: '1rem',
+    right: '1rem',
+    zIndex: 1000,
+  }}
+  onMouseEnter={handleMouseEnter}
+  onMouseLeave={handleMouseLeave}
+>
+  <div
+    style={{
+      position: 'relative',
+      display: 'inline-block',
+    }}
+  >
+    <img
+      src={avatarUrl}
+      alt="Avatar"
+      style={{
+        width: '40px',
+        height: '40px',
+        borderRadius: '50%',
+        objectFit: 'cover',
+        boxShadow: '0 0 5px rgba(0,0,0,0.1)',
+        cursor: 'pointer',
+      }}
+    />
 
-      {open && (
+    {hovered && (
+      <div
+        style={{
+          position: 'absolute',
+          top: '110%',
+          right: 0,
+          backgroundColor: '#1f0c44',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          padding: '0.25rem 0.5rem',
+          textAlign: 'left',
+          color: '#FFFFFF',
+          width: '140px',
+          fontSize: '0.85rem',
+        }}
+      >
         <div
+          onClick={() => navigate('/profile')}
           style={{
-            marginTop: '0.5rem',
-            backgroundColor: '#1f0c44',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-            padding: '0.5rem 1rem',
-            textAlign: 'left',
+            padding: '6px 0',
+            cursor: 'pointer',
+            fontWeight: 500,
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#34215e')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
-          <div
-            onClick={() => {
-              navigate('/profile');
-              setOpen(false);
-            }}
-            style={{
-              padding: '0.4rem 0',
-              cursor: 'pointer',
-              color: '#FFFFFF',
-              fontWeight: 500,
-            }}
-          >
-            Show Profile
-          </div>
-          <div
-            onClick={() => {
-              onLogout();
-              setOpen(false);
-              navigate('/login', { replace: true });
-            }}
-            style={{
-              padding: '0.4rem 0',
-              cursor: 'pointer',
-              color: '#FFFFFF',
-              fontWeight: 500,
-            }}
-          >
-            Logout
-          </div>
+          Show Profile
         </div>
-      )}
-    </div>
+        <div
+          onClick={() => {
+            onLogout();
+            navigate('/login', { replace: true });
+          }}
+          style={{
+            padding: '6px 0',
+            cursor: 'pointer',
+            fontWeight: 500,
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#34215e')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+        >
+          Logout
+        </div>
+      </div>
+    )}
+  </div>
+</div>
   );
 }
 

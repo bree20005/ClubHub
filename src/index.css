@@ -942,5 +942,17 @@ h1, h2, h3 {
   cursor: pointer;
 }
 
+.profile-option:hover {
+  color: blue;
+}
+
+.dropdown-menu {
+  transition: opacity 0.2s ease;
+}
+
+.profile-hover-container:hover .dropdown-menu {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
  
  
