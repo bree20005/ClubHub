@@ -262,7 +262,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
         />
       )}
 
-      {/* {canDeletePost && (
+      {/* {canDeletePost && ( can this be deleted?
         <button onClick={handleDeletePost} className="delete-button"
           style={{
             marginTop: '1rem',

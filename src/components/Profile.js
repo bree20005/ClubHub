@@ -107,9 +107,6 @@ function ProfileHeader() {
     }
   };
 // this is for the checkmark to confirm that the user agrees with terms and conditions
-
-  //the header 3 needs to be fixed but it wont let me directly comment next to it
-  console.log('clubs:', clubs);
   return (
     <div className="profile-page" style={{ textAlign: 'center', color: 'white'}}>
       <h1 style={{ fontSize: '2.6rem', color: 'black', fontWeight: '500'}}>Welcome, {fullName || 'User'}!</h1>
