@@ -16,6 +16,7 @@ import JoinClubPage from './components/JoinClubPage';
 import SidebarClubLogos from './components/SidebarClubLogos';
 import LikeButton from './components/LikeButton.js';
 import MyEvents from './components/MyEvents';
+import ClubStream from './components/ClubStream';
 
 import './index.css';
 import logo from './components/assets/logo.png';
@@ -129,6 +130,7 @@ function Sidebar({ onClubSelect, selectedClub }) {
         {/* <li><Link to="/myevents">My Events</Link></li> */}
         {/* <li><Link to="/calendar">Calendar</Link></li> */}
         {/* <li><Link to="/create">Create Content</Link></li> */}
+        <li style={{marginTop: '10px', marginBottom: '-10px', fontSize: '0.9rem'}}><Link to="/club-stream">🔮 Club Stream</Link></li>
       </ul>
       <SidebarClubLogos selectedClub={selectedClub} onClubSelect={onClubSelect} />
       <div className="plus-menu">
@@ -288,6 +290,7 @@ function Layout() {
           <Route path="/club-success" element={<ClubSuccessPage />} />
           <Route path="/join-club" element={<JoinClubPage />} />
           <Route path="/feed/:clubId" element={<Feed />} />
+          <Route path="/club-stream" element={<ClubStream />} />
 
           
         </Routes>
