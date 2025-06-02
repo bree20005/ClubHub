@@ -15,6 +15,7 @@ import ClubSuccessPage from './components/ClubSuccessPage';
 import JoinClubPage from './components/JoinClubPage';
 import SidebarClubLogos from './components/SidebarClubLogos';
 import LikeButton from './components/LikeButton.js';
+import MyEvents from './components/MyEvents';
 
 import './index.css';
 import logo from './components/assets/logo.png';
@@ -99,6 +100,7 @@ function Sidebar({ onClubSelect, selectedClub }) {
       <Logo logo={logo} />
       <ul>
         <li><Link to="/feed">Feed</Link></li>
+        <li><Link to="/myevents">My Events</Link></li>
         {/* <li><Link to="/calendar">Calendar</Link></li> */}
         <li><Link to="/create">Create Content</Link></li>
       </ul>
@@ -239,6 +241,16 @@ function Layout() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/myevents"
+            element={
+              <ProtectedRoute>
+                <MyEvents />
+              </ProtectedRoute>
+              }
+          />
+
           <Route path="/create-profile" element={<CreateProfilePage />} />
           <Route path="/join-or-create-club" element={<JoinOrCreateClubPage />} />
           <Route path="/start-club" element={<StartClubPage />} />

@@ -1,77 +1,96 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 
-function Event({ id, content, eventTime, image, authorName, createdAt, user }) {
-  const [goingCount, setGoingCount] = useState(0);
-  const [userIsGoing, setUserIsGoing] = useState(false);
+function Event({ content, eventTime, image, authorName, createdAt, id, user }) {
+  const [rsvpCount, setRsvpCount] = useState(0);
+  const [userHasRSVPd, setUserHasRSVPd] = useState(false);
 
-  // Fetch RSVP status and count
   useEffect(() => {
-    const fetchRsvps = async () => {
-      const { data, error } = await supabase
+    const fetchRSVPs = async () => {
+      const { data: rsvps, error: rsvpError } = await supabase
         .from('rsvps')
         .select('*')
         .eq('event_id', id);
 
-      if (!error && data) {
-        setGoingCount(data.length);
-        if (user) {
-          setUserIsGoing(data.some(r => r.user_id === user.id));
-        }
+      const { data: postMeta, error: postError } = await supabase
+        .from('posts')
+        .select('rsvp_count')
+        .eq('id', id)
+        .single();
+
+      if (!rsvpError && !postError) {
+        setRsvpCount(postMeta?.rsvp_count || 0);
+        setUserHasRSVPd(rsvps.some((r) => r.user_id === user?.id));
+      } else {
+        console.error('Error fetching RSVP data:', rsvpError?.message || postError?.message);
       }
     };
 
-    fetchRsvps();
+    if (user) fetchRSVPs();
   }, [id, user]);
 
-  // Handle RSVP toggle
-  const toggleRsvp = async () => {
+  const toggleRSVP = async () => {
     if (!user) return;
 
-    if (userIsGoing) {
-      // remove RSVP
-      await supabase
+    if (userHasRSVPd) {
+      const { error } = await supabase
         .from('rsvps')
         .delete()
         .eq('event_id', id)
         .eq('user_id', user.id);
-      setGoingCount(prev => prev - 1);
-      setUserIsGoing(false);
+
+      if (!error) {
+        setRsvpCount((prev) => prev - 1);
+        setUserHasRSVPd(false);
+
+        await supabase
+          .from('posts')
+          .update({ rsvp_count: rsvpCount - 1 })
+          .eq('id', id);
+      }
     } else {
-      // add RSVP
-      await supabase.from('rsvps').insert({
-        event_id: id,
-        user_id: user.id,
-      });
-      setGoingCount(prev => prev + 1);
-      setUserIsGoing(true);
+      const { error } = await supabase.from('rsvps').insert([
+        {
+          event_id: id,
+          user_id: user.id,
+        },
+      ]);
+
+      if (!error) {
+        setRsvpCount((prev) => prev + 1);
+        setUserHasRSVPd(true);
+
+        await supabase
+          .from('posts')
+          .update({ rsvp_count: rsvpCount + 1 })
+          .eq('id', id);
+      }
     }
   };
 
   return (
-    <div className="post-card"> {/* Same styling as posts */}
-      <div className="post-meta">
+    <div className="event-card">
+      <div className="event-meta">
         <strong>{authorName}</strong> • {new Date(createdAt).toLocaleString()}
       </div>
 
-      <h2 style={{ marginBottom: '0.5rem' }}>{content}</h2>
-
-      <p style={{ color: '#d3d3d3', marginBottom: '0.5rem' }}>
-        📅 {new Date(eventTime).toLocaleString()}
-      </p>
+      <h2 style={{ marginTop: '0.5rem' }}>{content}</h2>
+      <p>📆 {new Date(eventTime).toLocaleString()}</p>
 
       {image && (
         <img
           src={image}
-          alt="Event poster"
+          alt="event poster"
           className="preview-image"
-          style={{ maxWidth: '100%', borderRadius: '10px', marginTop: '1rem' }}
+          style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '1rem' }}
         />
       )}
 
-      <button onClick={toggleRsvp} className="rsvp-button">
-        {userIsGoing ? '✅ Going' : '👍 I’m Going'} • {goingCount}
+      <button className="rsvp-button" onClick={toggleRSVP}>
+        {userHasRSVPd ? '✅ Going (Click to Cancel)' : '🎟️ I’m Going'}
       </button>
+
+      <p style={{ marginTop: '0.5rem' }}>{rsvpCount} going</p>
     </div>
   );
 }

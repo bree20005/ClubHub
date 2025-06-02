@@ -114,7 +114,7 @@ function Feed() {
 
       <div className="feed-items">
         {filteredPosts.map((item) => {
-          if (item.type === 'post' || item.type === 'announcement') {
+          if (item.type === 'post') {
             return (
               <Post
                 key={item.id}
