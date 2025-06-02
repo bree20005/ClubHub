@@ -242,7 +242,22 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
       
       {/* Show delete button if user is post author OR club creator */}
       {canDeletePost && (
-        <button onClick={handleDeletePost} className="delete-button">
+        <button onClick={handleDeletePost} className="delete-button"
+          style={{
+            marginTop: '1rem',
+            marginBottom: '0.5rem',
+            padding: '0.4rem 1rem',
+            borderRadius: '12px',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+            color: '#E0D8F6', 
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            backdropFilter: 'blur(6px)',
+            transition: 'all 0.2s ease',
+            cursor: 'pointer'
+          }}
+          >
           🗑️ Delete Post
         </button>
       )}
@@ -260,8 +275,8 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
         marginBottom: '0.5rem',
         padding: '0.4rem 1rem',
         borderRadius: '12px',
-        backgroundColor: 'rgba(255, 255, 255, 0.05)', // soft, glassy
-        color: '#E0D8F6', // soft lavender/white tone
+        backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+        color: '#E0D8F6', 
         border: '1px solid rgba(255, 255, 255, 0.08)',
         fontSize: '0.875rem',
         fontWeight: 500,
