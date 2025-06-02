@@ -34,7 +34,6 @@ function Feed() {
   const [loading, setLoading] = useState(true);
   const [clubRules, setClubRules] = useState('');
 
-
   useEffect(() => {
     const fetchClubs = async () => {
       const {
