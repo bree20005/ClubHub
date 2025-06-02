@@ -601,6 +601,8 @@ function Feed() {
 
       <div className="feed-items">
         {filteredPosts.map((item) => {
+          if (!user) return null; // prevent early render
+
           if (item.type === 'post') {
             return (
               <Post
@@ -627,19 +629,22 @@ function Feed() {
             return (
               <Event
                 key={item.id}
+                id={item.id}
                 content={item.content}
                 eventTime={item.event_time}
                 image={item.image_urls?.[0] || null}
                 authorName={item.authorName}
                 createdAt={item.created_at}
                 clubId={item.club_id} 
+                user={user}
               />
             );
           }
           return null;
         })}
       </div>
-    </div>
+
+      </div>
   );
 }
 
