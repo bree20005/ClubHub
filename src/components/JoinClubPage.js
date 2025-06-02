@@ -23,7 +23,7 @@ function JoinClubPage() {
   
     const { data: club, error } = await supabase
       .from('clubs')
-      .select('id, name')
+      .select('id, name, rules')
       .eq('code', code)
       .single();
   
@@ -78,14 +78,14 @@ function JoinClubPage() {
               color: 'black'
             }}> 
             <h3>{currentClub.name}</h3> 
-            <p> Please awknowledge that you will be respectful, not enocurage hate speech, and respect club rules </p> 
+            <p> Please confirm that you will follow the club rules set by the moderators </p> 
             <label> 
               <input
                 type="checkbox"
                 checked={agreementChecked}
                 onChange={(e) => setAgreementChecked(e.target.checked)}
               />
-              {' '} I agree to the terms and conditions {currentClub.name}. I agree to use proper speech, not tear others down, be respectful, and kind.
+              {' '} I agree to the terms and conditions for the club {currentClub.name}: {currentClub.rules}
             </label>
             <br />
             
