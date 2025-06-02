@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 
-function Post({ id, content, tag, image, imageGallery = [], authorName, createdAt, user, clubId }) {
+function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clubId }) {
   const [commentText, setCommentText] = useState('');
   const [commentList, setCommentList] = useState([]);
   const [replyTo, setReplyTo] = useState(null);
   const [likes, setLikes] = useState(0);
   const [userHasLiked, setUserHasLiked] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); //for admin
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [postAuthorName, setPostAuthorName] = useState(user?.full_name || 'Unknown');  // Set instantly to user's name
 
-  // Fetch comments
   useEffect(() => {
     const fetchComments = async () => {
       const { data, error } = await supabase
@@ -18,14 +19,8 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
         .eq('post_id', id)
         .order('created_at', { ascending: true });
 
-      if (!error) {
-        setCommentList(data);
-      } else {
-        console.error('Error fetching comments:', error.message);
-      }
+      if (!error) setCommentList(data);
     };
-
-//checking if admin so we can delete the post if needed
 
     const checkIfAdmin = async () => {
       const { data, error } = await supabase
@@ -39,14 +34,24 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
       }
     };
 
-    if (user && clubId) {
-      checkIfAdmin();
-    }
+    const fetchPostAuthor = async () => {
+      // Fetch the author_name directly from the posts table
+      const { data, error } = await supabase
+        .from('posts')
+        .select('author_name')
+        .eq('id', id)
+        .single();
 
+      if (!error && data) {
+        setPostAuthorName(data.author_name || 'Unknown'); // Update with actual author name
+      }
+    };
+
+    if (user && clubId) checkIfAdmin();
+    fetchPostAuthor();
     fetchComments();
-  }, [user, clubId, id]);
+  }, [id, user, clubId]);
 
-  // Fetch likes
   useEffect(() => {
     const fetchLikes = async () => {
       const { data } = await supabase
@@ -61,7 +66,6 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
     if (user) fetchLikes();
   }, [id, user]);
 
-  // Real-time subscription to likes
   useEffect(() => {
     const channel = supabase
       .channel('realtime-likes')
@@ -92,12 +96,10 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
 
   const handleLike = async () => {
     if (!user) return;
-  
-    // update visually 
-    setUserHasLiked(prev => !prev);
-    setLikes(prev => prev + (userHasLiked ? -1 : 1));
-  
-    // Then update the DB
+
+    setUserHasLiked((prev) => !prev);
+    setLikes((prev) => prev + (userHasLiked ? -1 : 1));
+
     if (userHasLiked) {
       await supabase
         .from('likes')
@@ -110,7 +112,6 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
         .insert([{ post_id: id, user_id: user.id }]);
     }
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -124,14 +125,12 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
         content: commentText,
         parent_id: replyTo,
       }])
-      .select('*, profiles(full_name)');
+      .select('*, profiles(full_name)'); // Ensure full_name is included here
 
     if (!error && data?.[0]) {
       setCommentList([...commentList, data[0]]);
       setCommentText('');
       setReplyTo(null);
-    } else {
-      console.error('Failed to submit comment:', error?.message);
     }
   };
 
@@ -160,7 +159,7 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
     return comments.map((c) => (
       <div key={c.id} style={{ marginLeft: depth * 20, marginBottom: '0.5rem' }}>
         <p className="comment">
-          <strong>{c.profiles?.full_name || 'Unknown User'}</strong> at{' '}
+          <strong>{c.profiles?.full_name || 'Unknown'}</strong> at{' '}
           {new Date(c.created_at).toLocaleString()}: {c.content}
         </p>
         <button className="reply-button" onClick={() => setReplyTo(c.id)}>
@@ -171,30 +170,27 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
     ));
   };
 
-  const confirmDelete = () => {
-    return window.confirm("Are you sure you want to delete this post?");
-  };
+  const confirmDelete = () => window.confirm("Are you sure you want to delete this post?");
 
   const handleDeletePost = async () => {
     if (!confirmDelete()) return;
-  
+
     const { error } = await supabase
       .from('posts')
       .delete()
       .eq('id', id);
-  
+
     if (error) {
       console.error('Failed to delete post:', error.message);
     } else {
       alert('Post deleted!');
     }
   };
-  
 
   return (
     <div className="post-card">
       <div className="post-meta">
-        <strong>{authorName}</strong> • {new Date(createdAt).toLocaleString()}
+        <strong>{postAuthorName || 'Unknown'}</strong> • {new Date(createdAt).toLocaleString()}
       </div>
 
       <p style={{ fontSize: '1.1rem' }}>{content}</p>
@@ -214,35 +210,46 @@ function Post({ id, content, tag, image, imageGallery = [], authorName, createdA
         </button>
       )}
 
-
       <div style={{ marginTop: '0.5rem' }}>
         <button className="like-button" onClick={handleLike}>
           {userHasLiked ? '❤️ Liked' : '🤍 Like'} • {likes}
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
-        <input
-          className="comment-input"
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          placeholder={replyTo ? 'Replying...' : 'Add a comment'}
-        />
-        <button type="submit" className="comment-submit">Post</button>
-        {replyTo && (
-          <button
-            type="button"
-            className="cancel-reply"
-            onClick={() => setReplyTo(null)}
-          >
-            Cancel Reply
-          </button>
-        )}
-      </form>
+      <button
+        onClick={() => setShowComments((prev) => !prev)}
+        className="toggle-comments-button"
+        style={{ marginTop: '1rem', marginBottom: '0.5rem' }}
+      >
+        {showComments ? 'Hide Comments' : `Show Comments (${commentList.length})`}
+      </button>
 
-      <div className="comment-list" style={{ marginTop: '1rem' }}>
-        {renderComments(threadedComments)}
-      </div>
+      {showComments && (
+        <>
+          <form onSubmit={handleSubmit}>
+            <input
+              className="comment-input"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder={replyTo ? 'Replying...' : 'Add a comment'}
+            />
+            <button type="submit" className="comment-submit">Post</button>
+            {replyTo && (
+              <button
+                type="button"
+                className="cancel-reply"
+                onClick={() => setReplyTo(null)}
+              >
+                Cancel Reply
+              </button>
+            )}
+          </form>
+
+          <div className="comment-list" style={{ marginTop: '1rem' }}>
+            {renderComments(threadedComments)}
+          </div>
+        </>
+      )}
     </div>
   );
 }

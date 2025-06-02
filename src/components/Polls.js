@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from './supabase'; 
+import { supabase } from './supabase';
 
 function Poll({ id, question, options }) {
   const [selected, setSelected] = useState(null);
-  const [hasVoted, setHasVoted] = useState(false);
   const [user, setUser] = useState(null);
   const [responses, setResponses] = useState([]);
 
@@ -25,7 +24,7 @@ function Poll({ id, question, options }) {
     fetchUser();
   }, []);
 
-  // Fetch poll responses and check if user has voted
+  // Fetch poll responses and user's vote
   useEffect(() => {
     const fetchResponses = async () => {
       const { data, error } = await supabase
@@ -38,11 +37,9 @@ function Poll({ id, question, options }) {
       } else {
         setResponses(data || []);
 
-        const alreadyVoted = data?.some((r) => r.user_id === user?.id);
-        if (alreadyVoted) {
-          const userVote = data.find((r) => r.user_id === user.id);
+        const userVote = data?.find((r) => r.user_id === user?.id);
+        if (userVote) {
           setSelected(userVote.selected_option);
-          setHasVoted(true);
         }
       }
     };
@@ -53,22 +50,33 @@ function Poll({ id, question, options }) {
   }, [id, user]);
 
   const handleVote = async (opt) => {
-    if (!user || hasVoted) return;
+    if (!user) return;
 
-    const { error } = await supabase.from('poll_responses').insert([
+    const { error } = await supabase.from('poll_responses').upsert(
       {
         poll_id: id,
         user_id: user.id,
         selected_option: opt,
       },
-    ]);
+      { onConflict: ['poll_id', 'user_id'] } // ensures update if exists
+    );
 
     if (error) {
       console.error('Error submitting vote:', error.message);
     } else {
       setSelected(opt);
-      setHasVoted(true);
-      setResponses([...responses, { poll_id: id, user_id: user.id, selected_option: opt }]);
+
+      // Re-fetch updated responses
+      const { data: updatedResponses, error: fetchError } = await supabase
+        .from('poll_responses')
+        .select('*')
+        .eq('poll_id', id);
+
+      if (fetchError) {
+        console.error('Error re-fetching responses:', fetchError.message);
+      } else {
+        setResponses(updatedResponses || []);
+      }
     }
   };
 
@@ -95,17 +103,20 @@ function Poll({ id, question, options }) {
             <li key={opt} style={{ marginBottom: '8px' }}>
               <button
                 onClick={() => handleVote(opt)}
-                disabled={hasVoted}
                 className={`poll-option ${selected === opt ? 'selected' : ''}`}
               >
                 <span>{opt}</span>
-                {hasVoted && <span style={{ marginLeft: '10px' }}>{percentageObj?.percent}%</span>}
+                {selected && (
+                  <span style={{ marginLeft: '10px' }}>
+                    {percentageObj?.percent}%
+                  </span>
+                )}
               </button>
             </li>
           );
         })}
       </ul>
-      {hasVoted && <p style={{ marginTop: '8px' }}>Thanks for voting!</p>}
+      {selected && <p style={{ marginTop: '8px' }}>You voted for: <strong>{selected}</strong></p>}
     </div>
   );
 }

@@ -92,6 +92,21 @@ function CreateContentPage() {
     const timestamp = new Date().toISOString();
 
     try {
+      // Fetch the author's full name from the profiles table using user.id
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching author name:', profileError.message);
+        return;
+      }
+
+      const authorName = profileData?.full_name || 'Unknown'; // Fallback to 'Unknown' if no name found
+
+      // Handle creating a post
       if (type === 'post') {
         let imageUrl = null;
         if (imageFile) imageUrl = await uploadFile(imageFile, 'post');
@@ -103,14 +118,16 @@ function CreateContentPage() {
           content: caption,
           image_urls: imageUrl ? [imageUrl] : [],
           created_at: timestamp,
-          user_id: user.id,
-          approved : true
+          user_id: user.id,  // Store user_id for the post
+          approved: true,
+          author_name: authorName,  // Store the author's full name
         });
 
         if (error) throw new Error(error.message);
         alert('Post submitted!');
       }
 
+      // Handle creating a poll
       if (type === 'poll') {
         const { error } = await supabase.from('posts').insert({
           club_id: selectedClubId,
@@ -119,14 +136,16 @@ function CreateContentPage() {
           question,
           options: isOpenEnded ? [] : options,
           created_at: timestamp,
-          user_id: user.id,
-          approved: true
+          user_id: user.id,  // Store user_id for the post
+          approved: true,
+          author_name: authorName,  // Store the author's full name
         });
 
         if (error) throw new Error(error.message);
         alert('Poll submitted!');
       }
 
+      // Handle creating an event
       if (type === 'event') {
         let posterUrl = null;
         if (eventPosterFile) posterUrl = await uploadFile(eventPosterFile, 'event');
@@ -139,15 +158,16 @@ function CreateContentPage() {
           event_time: eventDate,
           image_urls: posterUrl ? [posterUrl] : [],
           created_at: timestamp,
-          user_id: user.id,
-          approved: true
+          user_id: user.id,  // Store user_id for the post
+          approved: true,
+          author_name: authorName,  // Store the author's full name
         });
 
         if (error) throw new Error(error.message);
         alert('Event submitted for approval!');
       }
 
-      window.location.href = '/feed';
+      window.location.href = '/feed'; // Redirect after submission
     } catch (err) {
       alert(`Error: ${err.message}`);
     }

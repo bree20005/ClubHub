@@ -919,5 +919,18 @@ h1, h2, h3 {
   cursor: pointer;
 }
 
+.toggle-comments-button {
+  background: none;
+  border: none;
+  color: #0077cc;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: bold;
+  padding: 0;
+}
+.toggle-comments-button:hover {
+  text-decoration: underline;
+}
+
  
  
