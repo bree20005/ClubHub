@@ -1,44 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import RSVPButton from './rsvpButton';
+
 
 function Event({ content, eventTime, image, authorName, createdAt, id }) {
   const [rsvpCount, setRsvpCount] = useState(0);
   const [userHasRSVPd, setUserHasRSVPd] = useState(false);
   const [user, setUser] = useState(null);
 
-  // Fetch current user
+  // Get current user
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error('Error fetching user:', error.message);
-      } else {
-        setUser(data.user);
-      }
+      if (!error) setUser(data.user);
     };
-
     fetchUser();
   }, []);
 
-  // Fetch RSVP data
+  // Fetch RSVPs
   useEffect(() => {
     const fetchRSVPs = async () => {
-      const { data: rsvps, error: rsvpError } = await supabase
+      const { data: rsvps, error } = await supabase
         .from('rsvps')
         .select('*')
         .eq('event_id', id);
 
-      const { data: postMeta, error: postError } = await supabase
-        .from('posts')
-        .select('rsvp_count')
-        .eq('id', id)
-        .single();
-
-      if (!rsvpError && !postError) {
-        setRsvpCount(postMeta?.rsvp_count || 0);
+      if (!error && rsvps) {
+        setRsvpCount(rsvps.length);
         setUserHasRSVPd(rsvps.some((r) => r.user_id === user?.id));
-      } else {
-        console.error('RSVP fetch error:', rsvpError?.message || postError?.message);
       }
     };
 
@@ -49,31 +38,19 @@ function Event({ content, eventTime, image, authorName, createdAt, id }) {
     if (!user) return;
 
     if (userHasRSVPd) {
-      const { error } = await supabase
+      await supabase
         .from('rsvps')
         .delete()
         .eq('event_id', id)
         .eq('user_id', user.id);
-
-      if (!error) {
-        setRsvpCount((prev) => prev - 1);
-        setUserHasRSVPd(false);
-        await supabase.from('posts').update({ rsvp_count: rsvpCount - 1 }).eq('id', id);
-      } else {
-        console.error('Error removing RSVP:', error.message);
-      }
+      setUserHasRSVPd(false);
+      setRsvpCount((prev) => prev - 1);
     } else {
-      const { error } = await supabase
+      await supabase
         .from('rsvps')
         .insert([{ event_id: id, user_id: user.id }]);
-
-      if (!error) {
-        setRsvpCount((prev) => prev + 1);
-        setUserHasRSVPd(true);
-        await supabase.from('posts').update({ rsvp_count: rsvpCount + 1 }).eq('id', id);
-      } else {
-        console.error('Error adding RSVP:', error.message);
-      }
+      setUserHasRSVPd(true);
+      setRsvpCount((prev) => prev + 1);
     }
   };
 
@@ -84,15 +61,10 @@ function Event({ content, eventTime, image, authorName, createdAt, id }) {
       </div>
 
       <h2 style={{ marginTop: '0.5rem' }}>{content}</h2>
-
       <div className="event-time">📅 {new Date(eventTime).toLocaleString()}</div>
 
       {image && (
-        <img
-          src={image}
-          alt="event poster"
-          className="preview-image"
-        />
+        <img src={image} alt="event" className="preview-image" />
       )}
 
       <div
