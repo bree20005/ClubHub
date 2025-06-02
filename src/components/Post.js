@@ -9,7 +9,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
   const [userHasLiked, setUserHasLiked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [postAuthorName, setPostAuthorName] = useState(user?.full_name || 'Unknown');  // Set instantly to user's name
+  const [postAuthorName, setPostAuthorName] = useState(user?.full_name || 'Unknown');
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -35,7 +35,6 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
     };
 
     const fetchPostAuthor = async () => {
-      // Fetch the author_name directly from the posts table
       const { data, error } = await supabase
         .from('posts')
         .select('author_name')
@@ -43,7 +42,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
         .single();
 
       if (!error && data) {
-        setPostAuthorName(data.author_name || 'Unknown'); // Update with actual author name
+        setPostAuthorName(data.author_name || 'Unknown');
       }
     };
 
@@ -64,34 +63,6 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
     };
 
     if (user) fetchLikes();
-  }, [id, user]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel('realtime-likes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'likes',
-          filter: `post_id=eq.${id}`,
-        },
-        async () => {
-          const { data } = await supabase
-            .from('likes')
-            .select('*')
-            .eq('post_id', id);
-
-          setLikes(data.length);
-          setUserHasLiked(data.some((like) => like.user_id === user?.id));
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [id, user]);
 
   const handleLike = async () => {
@@ -125,7 +96,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
         content: commentText,
         parent_id: replyTo,
       }])
-      .select('*, profiles(full_name)'); // Ensure full_name is included here
+      .select('*, profiles(full_name)');
 
     if (!error && data?.[0]) {
       setCommentList([...commentList, data[0]]);
@@ -158,13 +129,25 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
   const renderComments = (comments, depth = 0) => {
     return comments.map((c) => (
       <div key={c.id} style={{ marginLeft: depth * 20, marginBottom: '0.5rem' }}>
-        <p className="comment">
-          <strong>{c.profiles?.full_name || 'Unknown'}</strong> at{' '}
-          {new Date(c.created_at).toLocaleString()}: {c.content}
-        </p>
-        <button className="reply-button" onClick={() => setReplyTo(c.id)}>
-          ↪️ Reply
-        </button>
+        <div className="comment">
+          {/* Display author and content prominently */}
+          <div style={{ fontSize: '1.1rem' }}>
+            <strong>{c.profiles?.full_name || 'Unknown'}</strong>
+          </div>
+          <p>{c.content}</p>
+
+          {/* Make timestamp and reply more discreet */}
+          <div style={{ fontSize: '0.85rem', color: '#666' }}>
+            <span>{new Date(c.created_at).toLocaleString()}</span>
+            <button
+              className="reply-button"
+              style={{ marginLeft: '10px', fontSize: '0.85rem', color: '#007bff' }}
+              onClick={() => setReplyTo(c.id)}
+            >
+              ↪️ Reply
+            </button>
+          </div>
+        </div>
         {c.replies?.length > 0 && renderComments(c.replies, depth + 1)}
       </div>
     ));
