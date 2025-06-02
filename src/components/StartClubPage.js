@@ -92,7 +92,11 @@ function StartClubPage() {
         club_id: club.id,
       });
 
-      window.location.href = `/club-success?code=${clubCode}&name=${encodeURIComponent(clubName)}`;
+      // window.location.href = `/club-success?code=${clubCode}&name=${encodeURIComponent(clubName)}`;
+
+      navigate('/club-success', {
+        state: { clubCode, clubName }
+      });
 
     } catch (err) {
       alert('Something went wrong. Check the console for details.');

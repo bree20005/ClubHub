@@ -275,7 +275,7 @@ function ProfileHeader() {
                 }}
                 onClick={() => handleDeleteClub(club.id)}
               >
-                Delete club
+                Remove club
               </div>
             </div>
               </li>
