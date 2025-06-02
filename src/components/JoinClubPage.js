@@ -173,8 +173,8 @@ function JoinClubPage() {
 
                 setMessage('Successfully joined club!');
                 setShowAgreementModal(false);
-                window.location.reload();
                 navigate('/feed');
+                window.location.reload();
               }}
               style={{
                 backgroundColor: '#fff',

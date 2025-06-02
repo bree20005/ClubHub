@@ -50,7 +50,7 @@ function SidebarClubLogos() {
           alt={club.name}
           title={club.name}
           className="club-logo-sidebar"
-          onClick={() => navigate('/feed')}
+          onClick={() => navigate(`/feed/${club.id}`)}
           style={{
             width: '60px',
             height: '60px',

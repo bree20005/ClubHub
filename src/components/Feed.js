@@ -221,6 +221,7 @@ function Feed() {
 
   useEffect(() => {
     const fetchPostsWithMeta = async () => {
+      
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select('*')

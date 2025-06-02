@@ -287,6 +287,8 @@ function Layout() {
           <Route path="/create" element={<CreateContentPage />} />
           <Route path="/club-success" element={<ClubSuccessPage />} />
           <Route path="/join-club" element={<JoinClubPage />} />
+          <Route path="/feed/:clubId" element={<Feed />} />
+
           
         </Routes>
       </main>
