@@ -249,9 +249,31 @@ function ClubStream() {
     if (!user) return;
   
     const fetchPostsWithMeta = async () => {
+      // Step 1: Get user's club memberships
+      const { data: memberships, error: membershipError } = await supabase
+        .from('user_clubs')
+        .select('club_id')
+        .eq('user_id', user.id);
+  
+      if (membershipError) {
+        console.error('Error fetching clubs:', membershipError.message);
+        return;
+      }
+  
+      // Extract club IDs from memberships
+      const clubIds = memberships?.map((m) => m.club_id);
+  
+      if (!clubIds || clubIds.length === 0) {
+        // User belongs to no clubs, so no posts to fetch
+        setPosts([]); // or handle empty state as you prefer
+        return;
+      }
+  
+      // Step 2: Fetch posts only from those clubs
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select('*')
+        .in('club_id', clubIds) // <-- filter by clubs user belongs to
         .order('created_at', { ascending: false });
   
       if (postsError) {
@@ -259,6 +281,7 @@ function ClubStream() {
         return;
       }
   
+      // Step 3: Enrich posts with meta info as before
       const postsWithMeta = await Promise.all(
         (postsData || []).map(async (post) => {
           // Fetch author name for this post's user_id
@@ -292,6 +315,7 @@ function ClubStream() {
   
     fetchPostsWithMeta();
   }, [user]);
+  
   
 
   const filteredPosts =
