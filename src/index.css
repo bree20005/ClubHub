@@ -897,8 +897,6 @@ h1, h2, h3 {
   transform: translateY(-1px);
 }
 
-
- 
  .poll-bar-wrapper {
   background-color: #eee;
   height: 20px;
@@ -1018,4 +1016,13 @@ h1, h2, h3 {
   color: #d3d3d3;
   margin-top: 0.25rem;
   font-size: 0.9rem;
+}
+
+.rules {
+  background-color: #1d0b41;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 24px 0;
+  font-size: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }

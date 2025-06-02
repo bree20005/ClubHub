@@ -32,6 +32,7 @@ function Feed() {
   const [joinedClubs, setJoinedClubs] = useState([]);
   const [selectedClubId, setSelectedClubId] = useState('');
   const [loading, setLoading] = useState(true);
+  const [rules, setRules] = useState('');
 
   useEffect(() => {
     const fetchClubs = async () => {
@@ -194,14 +195,15 @@ function Feed() {
     const fetchClubCover = async () => {
       const { data, error } = await supabase
         .from('clubs')
-        .select('cover_url, name')
-        .eq('id', clubId)
+        .select('cover_url, name, rules')
+        .eq('id', clubId, rules)
         .single();
       if (error) {
         console.error('Error fetching club cover:', error.message);
       } else {
         setClubCoverUrl(data.cover_url);
         setClubName(data.name);
+        setRules(data.rules)
       }
     };
     fetchClubCover();
@@ -489,8 +491,9 @@ function Feed() {
             <p style={{ color: '#1f0c44', marginBottom: '10px' }}>
               Stay in the loop with polls, events, and updates!
             </p>
-
-            <h2>Remember the terms and conditions of {clubName} that you have agreed to!</h2>
+          <div class="rules">
+            <h2>Remember the terms and conditions of {clubName} that you have agreed to: {rules}</h2>
+          </div>
           </div>
         </div>
       </header>
