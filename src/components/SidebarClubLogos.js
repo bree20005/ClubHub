@@ -39,7 +39,7 @@ function SidebarClubLogos() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '20px', // adds space between logos
+        gap: '30px', // ADD space between logos
         padding: '1rem 0'
       }}
     >

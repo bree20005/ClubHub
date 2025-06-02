@@ -52,68 +52,134 @@ function MyEvents() {
   }, []);
 
   const renderEventCard = (event) => (
-    <div key={event.id} className="event-card post-card" style={{ marginBottom: '1rem' }}>
-      <div className="post-meta" style={{ marginBottom: '0.5rem' }}>
+    <div key={event.id} style={cardStyle}>
+      <div style={metaStyle}>
         <strong>{event.author_name || 'Unknown'}</strong> •{' '}
         {new Date(event.created_at).toLocaleString()}
       </div>
 
-      <h3>{event.content}</h3>
-      <p>📆 {new Date(event.event_time).toLocaleString()}</p>
+      <h2 style={eventTitleStyle}>{event.content}</h2>
+      <p style={eventDateStyle}>📆 {new Date(event.event_time).toLocaleString()}</p>
 
       {event.image_urls?.[0] && (
         <img
           src={event.image_urls[0]}
           alt="event poster"
-          className="preview-image"
-          style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '0.75rem' }}
+          style={imageStyle}
         />
       )}
 
-      <p style={{ marginTop: '0.5rem', fontStyle: 'italic', color: '#7f7f7f' }}>✅ RSVP’d</p>
+      <p style={rsvpStyle}>✅ RSVP’d</p>
     </div>
   );
 
   return (
-    <div className="my-events-page" style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '1rem' }}>
-        Welcome back, {user?.user_metadata?.full_name || 'Friend'}!
-      </h1>
-
-      <p style={{ marginBottom: '2rem' }}>
-        You have RSVP’d to {upcoming.length + past.length} event
-        {(upcoming.length + past.length) !== 1 ? 's' : ''}.
-      </p>
-
-      <div className="event-columns" style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-        {/* Upcoming */}
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          <h2 style={{ marginBottom: '0.25rem' }}>🎉 Upcoming Events</h2>
-          <p style={{ color: '#964ad4', marginBottom: '1rem' }}>Get excited for what’s ahead!</p>
-          {upcoming.length > 0 ? (
-            upcoming.map(renderEventCard)
-          ) : (
-            <p style={{ fontStyle: 'italic', color: '#888' }}>
-              You haven’t RSVP’d to any upcoming events yet. Go check your feed!
-            </p>
-          )}
-        </div>
-
-        {/* Past */}
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          <h2 style={{ marginBottom: '0.25rem' }}>📸 Past Events</h2>
-          <p style={{ color: '#964ad4', marginBottom: '1rem' }}>Relive great memories.</p>
-          {past.length > 0 ? (
-            past.map(renderEventCard)
-          ) : (
-            <p style={{ fontStyle: 'italic', color: '#888' }}>
-              No past events yet — stay tuned!
-            </p>
-          )}
-        </div>
+    <div style={pageWrapperStyle}>
+      <div style={{ textAlign: 'center', marginBottom: '3rem', color: 'black'}}>
+        <h1 style={mainHeadingStyle}>
+          Welcome back, {user?.user_metadata?.full_name || 'Friend'}!
+        </h1>
+        <p style={subTextStyle}>
+          You have {upcoming.length} upcoming event{upcoming.length !== 1 ? 's' : ''} RSVP’d to.
+        </p>
       </div>
+
+      {upcoming.length > 0 && (
+        <>
+          <h2 style={sectionHeadingStyle}>Upcoming Events</h2>
+          <div style={gridStyle}>{upcoming.map(renderEventCard)}</div>
+        </>
+      )}
+
+      {past.length > 0 && (
+        <>
+          <h2 style={sectionHeadingStyle}>Past Events</h2>
+          <div style={gridStyle}>{past.map(renderEventCard)}</div>
+        </>
+      )}
+
+      {upcoming.length === 0 && past.length === 0 && (
+        <p style={emptyStateStyle}>No RSVP’d events yet. Check out the Feed!</p>
+      )}
     </div>
   );
 }
+
+// === Styles ===
+
+const pageWrapperStyle = {
+  padding: '4rem 2rem',
+  fontFamily: 'Inter, sans-serif',
+};
+
+const gridStyle = {
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: '2rem',
+  maxWidth: '800px',
+  margin: '0 auto',
+};
+
+const cardStyle = {
+  padding: '2rem',
+  borderRadius: '16px',
+  border: '1px solid #ddd',
+};
+
+const mainHeadingStyle = {
+  fontSize: '2.75rem',
+  fontWeight: '700',
+  color: 'black'
+};
+
+const subTextStyle = {
+  fontSize: '1.4rem',
+  color: '#333',
+};
+
+const sectionHeadingStyle = {
+  fontSize: '2rem',
+  fontWeight: '600',
+  marginTop: '3rem',
+  marginBottom: '1.5rem',
+  textAlign: 'center',
+};
+
+const eventTitleStyle = {
+  fontSize: '1.5rem',
+  fontWeight: '600',
+  marginTop: '0.75rem',
+};
+
+const eventDateStyle = {
+  fontSize: '1.2rem',
+  marginTop: '0.25rem',
+  color: '#444',
+};
+
+const metaStyle = {
+  fontSize: '1rem',
+  color: '#777',
+  marginBottom: '0.5rem',
+};
+
+const rsvpStyle = {
+  fontSize: '1.1rem',
+  marginTop: '1rem',
+  color: '#008000',
+};
+
+const imageStyle = {
+  maxWidth: '100%',
+  borderRadius: '12px',
+  marginTop: '1rem',
+};
+
+const emptyStateStyle = {
+  fontSize: '1.3rem',
+  textAlign: 'center',
+  marginTop: '2rem',
+  color: 'black'
+};
 
 export default MyEvents;

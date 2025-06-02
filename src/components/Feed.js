@@ -32,8 +32,7 @@ function Feed() {
   const [joinedClubs, setJoinedClubs] = useState([]);
   const [selectedClubId, setSelectedClubId] = useState('');
   const [loading, setLoading] = useState(true);
-  const [rules, setRules] = useState('');
-  const [description, setDescription] = useState('');
+  const [clubRules, setClubRules] = useState('');
 
   useEffect(() => {
     const fetchClubs = async () => {
@@ -210,6 +209,27 @@ function Feed() {
     };
     fetchClubCover();
   }, [clubId]);
+
+  useEffect(() => {
+    if (!clubId) return;
+  
+    const fetchClubRules = async () => {
+      const { data, error } = await supabase
+        .from('clubs')
+        .select('rules')
+        .eq('id', clubId)
+        .single();
+  
+      if (error) {
+        console.error('Error fetching club rules:', error.message);
+        setClubRules('');
+      } else {
+        setClubRules(data.rules || '');
+      }
+    };
+  
+    fetchClubRules();
+  }, [clubId]);  
 
   useEffect(() => {
     const loadUser = async () => {
@@ -493,10 +513,29 @@ function Feed() {
             <p style={{ color: '#1f0c44', marginBottom: '10px' }}>
               Stay in the loop with polls, events, and updates!
             </p>
-          <div class="rules">
-            <h2>Please remember the terms and conditions of {clubName} that you have agreed to: {rules}</h2>
-            <h2>Please remind yourself of the purpose of the club: {description}</h2>
-          </div>
+
+            {clubRules && (
+              <div
+              style={{
+                marginTop: '1.5rem',
+                marginBottom: '1.5rem',
+                padding: '1.25rem 1.5rem',
+                borderRadius: '14px', 
+                color: '#5A3E99',  
+                backdropFilter: 'blur(10px)',
+                fontSize: '1rem',
+                lineHeight: 1.6,
+                fontWeight: 400,
+                fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                userSelect: 'text',
+                backgroundImage: 'linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0))', 
+                backgroundColor: 'rgba(75, 54, 124, 0.25)',
+              }}
+            >
+                <strong style={{color: 'black'}}>📌 Club Guidelines:</strong>
+                <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-line', color: 'black'}}>{clubRules}</p>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -519,7 +558,7 @@ function Feed() {
         ))}
       </div>
 
-      <div className="create-button" style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+      <div className="create-button" style={{ textAlign: 'center'}}>
         <button
           onClick={() => setShowModal(true)} // Show popup
           aria-label="Add Content"
@@ -528,6 +567,9 @@ function Feed() {
             color: '#7c5e99',
             border: '2px solid #7c5e99',
             padding: '6px 10px',
+            marginBottom: '2px',
+            marginTop: '-40px',
+            paddingTop: '0px',
             borderRadius: '50%',
             cursor: 'pointer',
             fontWeight: '600',
