@@ -9,8 +9,9 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
   const [userHasLiked, setUserHasLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [postAuthorName, setPostAuthorName] = useState(user?.full_name || 'Unknown');
-  const [postAuthorId, setPostAuthorId] = useState(userId); //new add ons for allowing is admin to delete
-  const [isClubCreator, setIsClubCreator] = useState(false); 
+  const [postAuthorId, setPostAuthorId] = useState(userId);
+  const [isClubCreator, setIsClubCreator] = useState(false);
+  const [clubName, setClubName] = useState('');
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -22,7 +23,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
 
       if (!error) setCommentList(data);
     };
-    
+
     const fetchPostAuthor = async () => {
       const { data, error } = await supabase
         .from('posts')
@@ -32,31 +33,42 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
 
       if (!error && data) {
         setPostAuthorName(data.author_name || 'Unknown');
-        setPostAuthorId(data.user_id); //getting author id for deleteing
-        console.log('Fetched post author ID from DB:', data.user_id);
+        setPostAuthorId(data.user_id);
+      }
+    };
+
+    const fetchClubName = async () => {
+      if (!clubId) return;
+
+      const { data, error } = await supabase
+        .from('clubs')
+        .select('name')
+        .eq('id', clubId)
+        .single();
+
+      if (!error && data) {
+        setClubName(data.name);
       }
     };
 
     const checkIfClubCreator = async () => {
       if (!user || !clubId) return;
-    
+
       const { data, error } = await supabase
-        .from('clubs') 
+        .from('clubs')
         .select('creator_id')
         .eq('id', clubId)
         .single();
-    
+
       if (!error && data) {
         const isCreator = data.creator_id === user.id;
         setIsClubCreator(isCreator);
-        console.log('Is club creator:', isCreator, 'Club creator ID:', data.creator_id);
-      } else {
-        console.error('Error fetching club creator:', error);
       }
     };
 
     fetchPostAuthor();
     fetchComments();
+    fetchClubName();
     checkIfClubCreator();
   }, [id, user, clubId]);
 
@@ -74,7 +86,6 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
     if (user) fetchLikes();
   }, [id, user]);
 
-//this is all liking code for ths post
   const handleLike = async () => {
     if (!user) return;
 
@@ -114,9 +125,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
       setReplyTo(null);
     }
   };
-//end of liking code
 
-//start of comments
   const buildThreadedComments = (comments) => {
     const map = {};
     const roots = [];
@@ -146,10 +155,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
       .delete()
       .eq('id', commentId);
 
-    if (error) {
-      console.error('Failed to delete comment:', error.message);
-    } else {
-      // deleting the comment
+    if (!error) {
       setCommentList(commentList.filter(comment => comment.id !== commentId));
       alert('Comment deleted!');
     }
@@ -157,9 +163,8 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
 
   const renderComments = (comments, depth = 0) => {
     return comments.map((c) => {
-      // can user delete comment
       const canDeleteComment = (user?.id && c.user_id && user.id === c.user_id) || isClubCreator;
-      
+
       return (
         <div key={c.id} style={{ marginLeft: depth * 20, marginBottom: '0.5rem' }}>
           <div className="comment">
@@ -167,7 +172,6 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
               <strong>{c.profiles?.full_name || 'Unknown'}</strong>
             </div>
             <p>{c.content}</p>
-
             <div style={{ fontSize: '0.85rem', color: '#666' }}>
               <span>{new Date(c.created_at).toLocaleString()}</span>
               <button
@@ -177,16 +181,13 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
               >
                 ↪️ Reply
               </button>
-              
-              {/* delete button if user is comment author OR club creator this is where it may all go wrong*/}
               {canDeleteComment && (
                 <button
                   className="delete-comment-button"
-                  style={{ 
-                    marginLeft: '10px', 
-                    fontSize: '0.85rem', 
+                  style={{
+                    marginLeft: '10px',
+                    fontSize: '0.85rem',
                     color: '#dc3545',
-                    border: '1 px',
                     cursor: 'pointer'
                   }}
                   onClick={() => handleDeleteComment(c.id)}
@@ -203,7 +204,6 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
   };
 
   const confirmDelete = () => window.confirm("Are you sure you want to delete this post?");
-
   const handleDeletePost = async () => {
     if (!confirmDelete()) return;
 
@@ -212,21 +212,28 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
       .delete()
       .eq('id', id);
 
-    if (error) {
-      console.error('Cannot delete post:', error.message);
-    } else {
+    if (!error) {
       alert('Post deleted!');
+      window.location.reload();
     }
-    window.location.reload();
-  }
+  };
 
-  // Check if current user can delete this post (either post author or club creator)
   const canDeletePost = (user?.id && postAuthorId && user.id === postAuthorId) || isClubCreator;
-  
+
   return (
     <div className="post-card">
-      <div className="post-meta">
-        <strong>{postAuthorName || 'Unknown'}</strong> • {new Date(createdAt).toLocaleString()}
+      <div
+        className="post-meta"
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      >
+        <div>
+          <strong>{postAuthorName || 'Unknown'}</strong> • {new Date(createdAt).toLocaleString()}
+        </div>
+        {clubName && (
+          <div style={{ fontSize: '0.85rem', color: '#ccc' }}>
+            {clubName}
+          </div>
+        )}
       </div>
 
       <p style={{ fontSize: '1.1rem' }}>{content}</p>
@@ -239,14 +246,13 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
           style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '1rem' }}
         />
       )}
-      
-      {/* Show delete button if user is post author OR club creator */}
+
       {canDeletePost && (
         <button onClick={handleDeletePost} className="delete-button">
           🗑️ Delete Post
         </button>
       )}
-      
+
       <div style={{ marginTop: '0.5rem' }}>
         <button className="like-button" onClick={handleLike}>
           {userHasLiked ? '❤️ Liked' : '🤍 Like'} • {likes}
@@ -254,33 +260,32 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
       </div>
 
       <button
-      onClick={() => setShowComments((prev) => !prev)}
-      style={{
-        marginTop: '1rem',
-        marginBottom: '0.5rem',
-        padding: '0.4rem 1rem',
-        borderRadius: '12px',
-        backgroundColor: 'rgba(255, 255, 255, 0.05)', // soft, glassy
-        color: '#E0D8F6', // soft lavender/white tone
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        fontSize: '0.875rem',
-        fontWeight: 500,
-        backdropFilter: 'blur(6px)',
-        transition: 'all 0.2s ease',
-        cursor: 'pointer'
-      }}
-      onMouseEnter={(e) => {
-        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-        e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-      }}
-      onMouseLeave={(e) => {
-        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-        e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-      }}
-    >
-      {showComments ? 'Hide Comments' : `Show Comments (${commentList.length})`}
-    </button>
-
+        onClick={() => setShowComments((prev) => !prev)}
+        style={{
+          marginTop: '1rem',
+          marginBottom: '0.5rem',
+          padding: '0.4rem 1rem',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          color: '#E0D8F6',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          backdropFilter: 'blur(6px)',
+          transition: 'all 0.2s ease',
+          cursor: 'pointer'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+          e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+        }}
+      >
+        {showComments ? 'Hide Comments' : `Show Comments (${commentList.length})`}
+      </button>
 
       {showComments && (
         <>

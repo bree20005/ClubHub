@@ -614,6 +614,7 @@ function Feed() {
                 comments={item.comments}
                 user={user}
                 authorName={item.authorName}
+                clubId={item.club_id} 
                 createdAt={item.created_at}
               />
             );
@@ -632,6 +633,7 @@ function Feed() {
                 image={item.image_urls?.[0] || null}
                 authorName={item.authorName}
                 createdAt={item.created_at}
+                clubId={item.club_id} 
               />
             );
           }
