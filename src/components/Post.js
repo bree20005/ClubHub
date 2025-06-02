@@ -235,7 +235,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
   const canDeletePost = (user?.id && postAuthorId && user.id === postAuthorId) || isClubCreator;
 
   return (
-    <div className="post-card">
+    <div className="post-card" style={{ position: 'relative' }}>
       <div
         className="post-meta"
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -261,7 +261,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
         />
       )}
 
-      {canDeletePost && (
+      {/* {canDeletePost && (
         <button onClick={handleDeletePost} className="delete-button"
           style={{
             marginTop: '1rem',
@@ -280,7 +280,34 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
           >
           🗑️ Delete Post
         </button>
+      )} */}
+
+      {canDeletePost && (
+        <button
+          onClick={handleDeletePost}
+          className="delete-button"
+          style={{
+            position: 'absolute',
+            bottom: '1rem',
+            right: '1rem',
+            padding: '0.4rem 1rem',
+            borderRadius: '12px',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            color: '#E0D8F6',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            backdropFilter: 'blur(6px)',
+            transition: 'all 0.2s ease',
+            cursor: 'pointer',
+            zIndex: 1,
+          }}
+        >
+          🗑️ Delete Post
+        </button>
       )}
+
+
 
       <div style={{ marginTop: '0.5rem' }}>
         <button className="like-button" onClick={handleLike}>

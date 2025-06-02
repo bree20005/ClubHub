@@ -6,7 +6,7 @@ import Event from './Event';
 import Calendar from './Calendar';
 import LikeButton from './LikeButton';
 import { useParams, useNavigate } from 'react-router-dom';
-import sampleCover from './assets/wics_cover.jpeg';
+import sampleCover from './assets/clubs.jpg';
 
 function Feed() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ function Feed() {
   const [posts, setPosts] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [clubName, setClubName] = useState('');
-  const [clubCoverUrl, setClubCoverUrl] = useState(null);
+//   const [clubCoverUrl, setClubCoverUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState('post');
   const [caption, setCaption] = useState('');
@@ -192,25 +192,25 @@ function Feed() {
     setSubmitting(false);
   };
 
-  useEffect(() => {
-    if (!clubId) return;
-    const fetchClubCover = async () => {
-      const { data, error } = await supabase
-        .from('clubs')
-        .select('cover_url, name, rules, description')
-        .eq('id', clubId, rules, description)
-        .single();
-      if (error) {
-        console.error('Error fetching club cover:', error.message);
-      } else {
-        setClubCoverUrl(data.cover_url);
-        setClubName(data.name);
-        setRules(data.rules)
-        setDescription(data.description)
-      }
-    };
-    fetchClubCover();
-  }, [clubId]);
+//   useEffect(() => {
+//     if (!clubId) return;
+//     const fetchClubCover = async () => {
+//       const { data, error } = await supabase
+//         .from('clubs')
+//         .select('cover_url, name, rules, description')
+//         .eq('id', clubId, rules, description)
+//         .single();
+//       if (error) {
+//         console.error('Error fetching club cover:', error.message);
+//       } else {
+//         setClubCoverUrl(data.cover_url);
+//         setClubName(data.name);
+//         setRules(data.rules)
+//         setDescription(data.description)
+//       }
+//     };
+//     fetchClubCover();
+//   }, [clubId]);
 
   useEffect(() => {
     if (!clubId) return;
@@ -495,7 +495,7 @@ function Feed() {
         <div className="header-content">
           <div>
             <img
-              src={clubCoverUrl || sampleCover}
+              src={sampleCover}
               alt="Club Cover Photo"
               style={{
                 width: '100%',
