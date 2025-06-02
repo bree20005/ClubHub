@@ -33,6 +33,8 @@ function Feed() {
   const [selectedClubId, setSelectedClubId] = useState('');
   const [loading, setLoading] = useState(true);
   const [clubRules, setClubRules] = useState('');
+  const [rules, setRules] = useState('');
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
     const fetchClubs = async () => {
