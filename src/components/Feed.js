@@ -184,7 +184,7 @@ function Feed() {
         alert('Event submitted for approval!');
       }
 
-      window.location.href = '/feed'; // Redirect after submission
+      navigate('/club-stream');
     } catch (err) {
       alert(`Error: ${err.message}`);
     }
