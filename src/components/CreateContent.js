@@ -177,8 +177,6 @@ function CreateContentPage() {
 
   return (
     <div className="feed-container">
-      <h1>Create Content</h1>
-
       {loading ? (
         <p>Loading clubs...</p>
       ) : joinedClubs.length === 0 ? (

@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #ffffff;
+  background-color: #0a192f;
   color: #ffffff;
   height: 100%;
 }
@@ -74,7 +74,7 @@ h1, h2, h3 {
 /* Main content */
 .main-content {
   flex-grow: 1;
-  background-color: #8869ae;
+  background-color: #b29dc9;
   padding: 30px;
   overflow-y: auto;
 }
@@ -85,62 +85,76 @@ h1, h2, h3 {
   margin: 0 auto;
 }
 
-/* Card styles */
 .post-card,
 .poll-card {
-  background-color: #1f0c44;
-  padding: 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(100, 255, 218, 0.1);
+  background-color: #1e1333; /* Deeper, elegant dark purple */
+  padding: 1.75rem;
+  border-radius: 14px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #2d1a4d;
 }
 
-/* Poll options */
+.post-card:hover,
+.poll-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Poll Options List */
 .poll-card ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: stretch; 
-  width: fit-content; 
+  gap: 14px;
 }
 
+/* Individual Option */
 .poll-card li {
-  margin-bottom: 10px;
   width: 100%;
 }
 
+/* Poll Button */
 .poll-card button {
-  background-color: #ae9cc3;
-  color: #1f2c3f;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
+  background-color: #2f1b4f;
+  color: #f3f3f3;
+  border: 1px solid #3f2763;
+  padding: 14px 18px;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 0.95rem;
   width: 100%;
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background-color 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .poll-card button:hover {
-  background-color: #ae9cc3;
-  transform: scale(1.02)
+  background-color: #3a2262;
+  border-color: #5e3c93;
+  transform: scale(1.015);
 }
 
+/* Selected State */
 .poll-card button.selected {
-  background-color: #7c5e99;
-  color: white;
+  background-color: #5b3b89;
+  color: #ffffff;
+  border-color: #7c5db0;
 }
 
+/* Percentage Display */
 .poll-card .percentage {
-  margin-left: 15px;
-  font-weight: normal;
-  color: #ffffffcc;
+  margin-left: 12px;
+  font-weight: 400;
+  color: #cfc8e8;
+  font-size: 0.9rem;
+  opacity: 0.9;
 }
 
 /* Create content form */
@@ -555,12 +569,19 @@ h1, h2, h3 {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
-  margin: 1.5rem 0;
+  margin: 1.5rem;
+  margin-top: -20px;
+  margin-bottom: 30px;
   flex-wrap: wrap;
+  transform: scale(1.3)
+}
+
+.create-button {
+  margin-bottom: 30px;
 }
 
 .filter-button {
-  background-color: #112240;
+  background-color: #1e1333;
   border: 1px solid #ae9cc3;
   color: white;
   padding: 6px 12px;
@@ -573,11 +594,13 @@ h1, h2, h3 {
 .filter-button:hover {
   background-color: #ae9cc3;
   color: #0a192f;
+  border-color: #1e1333;
 }
 
 .filter-button.active {
   background-color: #ae9cc3;
   color: #0a192f;
+  border-color: #1e1333;
 }
 
 .add-club-form {
@@ -917,19 +940,6 @@ h1, h2, h3 {
   color: crimson;
   margin-left: 8px;
   cursor: pointer;
-}
-
-.toggle-comments-button {
-  background: none;
-  border: none;
-  color: #0077cc;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: bold;
-  padding: 0;
-}
-.toggle-comments-button:hover {
-  text-decoration: underline;
 }
 
  

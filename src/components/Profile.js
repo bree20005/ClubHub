@@ -112,7 +112,7 @@ function ProfileHeader() {
   console.log('clubs:', clubs);
   return (
     <div className="profile-page" style={{ textAlign: 'center', color: 'white'}}>
-      <h1 style={{ fontSize: '2.8rem' }}>Welcome, {fullName || 'User'}!</h1>
+      <h1 style={{ fontSize: '2.6rem', color: 'black', fontWeight: '500'}}>Welcome, {fullName || 'User'}!</h1>
 
       <div
         style={{
