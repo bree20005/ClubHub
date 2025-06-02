@@ -1023,8 +1023,7 @@ h1, h2, h3 {
   font-size: 0.9rem;
 }
 
-.feed-container {
-  height: 100vh;
+/* .feed-container {
   display: flex;
   flex-direction: column;
 }
@@ -1032,5 +1031,5 @@ h1, h2, h3 {
 .feed-container, .feed-container * {
   margin-bottom: 30px;
   padding-bottom: 0;
-}
+}  */
 
