@@ -354,143 +354,142 @@ function Feed() {
           </button>
           
           {/* Create content here*/}
-          <div className="feed-container">
-      {loading ? (
-        <p>Loading clubs...</p>
-      ) : joinedClubs.length === 0 ? (
-        <p>Join a club first before posting.</p>
-      ) : (
-        <form onSubmit={handleSubmit} className="create-content-form">
-          <label>
-            Select Club:    
-            <select
-              value={selectedClubId}
-              onChange={(e) => setSelectedClubId(e.target.value)}
-            >
-              {joinedClubs.map((club) => (
-                <option key={club.id} value={club.id}>
-                  {club.name}
-                </option>
-              ))}
-            </select>
-          </label>
+        <div className="feed-container">
+            {loading ? (
+              <p>Loading clubs...</p>
+            ) : joinedClubs.length === 0 ? (
+              <p>Join a club first before posting.</p>
+            ) : (
+              <form onSubmit={handleSubmit} className="create-content-form" style={{height: '400px', width: '100%', overflow: 'scroll'}}>
+                <label>
+                  Select Club:    
+                  <select
+                    value={selectedClubId}
+                    onChange={(e) => setSelectedClubId(e.target.value)}
+                  >
+                    {joinedClubs.map((club) => (
+                      <option key={club.id} value={club.id}>
+                        {club.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-          <label>
-            Content Type:
-            <select value={type} onChange={(e) => setType(e.target.value)}>
-              <option value="post">Post</option>
-              <option value="poll">Poll</option>
-              <option value="event">Event</option>
-            </select>
-          </label>
+                <label>
+                  Content Type:
+                  <select value={type} onChange={(e) => setType(e.target.value)}>
+                    <option value="post">Post</option>
+                    <option value="poll">Poll</option>
+                    <option value="event">Event</option>
+                  </select>
+                </label>
 
-          {type === 'post' && (
-            <>
-              <label>Upload Image:</label>
-              <label
-                style={{
-                  display: 'inline-block',
-                  padding: '8px 16px',
-                  backgroundColor: '#4b367c',
-                  color: '#f0eaff',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  fontSize: '0.9rem',
-                  userSelect: 'none',
-                  marginBottom: '10px',
-                  width: '150px'
-                }}
-              >
-                Upload Image
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, setImageFile, setImage)}
-                  style={{ display: 'none' }}
-                />
-              </label>
-              {image && (
-                <img
-                  src={image}
-                  alt="preview"
+                {type === 'post' && (
+                  <>
+                    <label>Upload Image:</label>
+                    <label
+                      style={{
+                        display: 'inline-block',
+                        padding: '8px 16px',
+                        backgroundColor: '#4b367c',
+                        color: '#f0eaff',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        fontSize: '0.9rem',
+                        userSelect: 'none',
+                        marginBottom: '10px',
+                        width: '150px'
+                      }}
+                    >
+                      Upload Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, setImageFile, setImage)}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                    {image && (
+                      <img
+                        src={image}
+                        alt="preview"
+                        style={{
+                          maxWidth: '150px',
+                          maxHeight: '150px',
+                          objectFit: 'contain',
+                          borderRadius: '8px',
+                          marginTop: '10px',
+                        }}
+                      />
+                    )}
+                    <label>Caption:</label>
+                    <textarea value={caption} onChange={(e) => setCaption(e.target.value)} />
+                  </>
+                )}
+
+                {type === 'poll' && (
+                  <>
+                    <label>Question:</label>
+                    <input value={question} onChange={(e) => setQuestion(e.target.value)} />
+                    {/* <label>
+                      <input
+                        type="checkbox"
+                        checked={isOpenEnded}
+                        onChange={(e) => setIsOpenEnded(e.target.checked)}
+                      />
+                      Open-ended poll
+                    </label> */}
+                    {!isOpenEnded &&
+                      options.map((opt, idx) => (
+                        <input
+                          key={idx}
+                          value={opt}
+                          placeholder={`Option ${idx + 1}`}
+                          onChange={(e) => {
+                            const copy = [...options];
+                            copy[idx] = e.target.value;
+                            setOptions(copy);
+                          }}
+                        />
+                      ))}
+                  </>
+                )}
+
+                {type === 'event' && (
+                  <>
+                    <label>Event Title:</label>
+                    <input value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
+                    <label>Date and Time:</label>
+                    <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
+                    <label>Upload Poster:</label>
+                    <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, setEventPosterFile, setEventPoster)} />
+                    {eventPoster && <img src={eventPoster} alt="event poster" className="preview-image" />}
+                  </>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitting}
                   style={{
-                    maxWidth: '150px',
-                    maxHeight: '150px',
-                    objectFit: 'contain',
+                    display: 'block',
+                    margin: '20px auto 0',
+                    padding: '12px 24px',
+                    fontSize: '1.2rem',
+                    fontWeight: '700',
+                    backgroundColor: '#4b367c',
+                    color: '#f0eaff',
+                    border: 'none',
                     borderRadius: '8px',
-                    marginTop: '10px',
+                    cursor: submitting ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.3s ease',
                   }}
-                />
-              )}
-              <label>Caption:</label>
-              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} />
-            </>
-          )}
-
-          {type === 'poll' && (
-            <>
-              <label>Question:</label>
-              <input value={question} onChange={(e) => setQuestion(e.target.value)} />
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isOpenEnded}
-                  onChange={(e) => setIsOpenEnded(e.target.checked)}
-                />
-                Open-ended poll
-              </label>
-              {!isOpenEnded &&
-                options.map((opt, idx) => (
-                  <input
-                    key={idx}
-                    value={opt}
-                    placeholder={`Option ${idx + 1}`}
-                    onChange={(e) => {
-                      const copy = [...options];
-                      copy[idx] = e.target.value;
-                      setOptions(copy);
-                    }}
-                  />
-                ))}
-            </>
-          )}
-
-          {type === 'event' && (
-            <>
-              <label>Event Title:</label>
-              <input value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
-              <label>Date and Time:</label>
-              <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
-              <label>Upload Poster:</label>
-              <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, setEventPosterFile, setEventPoster)} />
-              {eventPoster && <img src={eventPoster} alt="event poster" className="preview-image" />}
-            </>
-          )}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{
-              display: 'block',
-              margin: '20px auto 0',
-              padding: '12px 24px',
-              fontSize: '1.2rem',
-              fontWeight: '700',
-              backgroundColor: '#4b367c',
-              color: '#f0eaff',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: submitting ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.3s ease',
-            }}
-          >
-            {submitting ? 'Submitting...' : 'Submit'}
-          </button>
-        </form>
-      )}
-    </div>
-
+                >
+                  {submitting ? 'Submitting...' : 'Submit'}
+                </button>
+              </form>
+            )}
+        </div>
     </div>
       )}
 
@@ -569,8 +568,8 @@ function Feed() {
             color: '#7c5e99',
             border: '2px solid #7c5e99',
             padding: '6px 10px',
-            marginBottom: '2px',
-            marginTop: '-40px',
+            marginBottom: '40px',
+            marginTop: '50px',
             paddingTop: '0px',
             borderRadius: '50%',
             cursor: 'pointer',
