@@ -226,6 +226,7 @@ function Feed() {
         .from('posts')
         .select('*')
         .eq('approved', true)
+        .eq('club_id', clubId)
         .order('created_at', { ascending: false });
 
       if (postsError) {
@@ -240,7 +241,7 @@ function Feed() {
             .select('full_name')
             .eq('id', post.user_id)
             .single();
-
+  
           const [likesRes, commentsRes] = await Promise.all([
             supabase.from('likes').select('*').eq('post_id', post.id),
             supabase
@@ -256,8 +257,8 @@ function Feed() {
           return {
             ...post,
             authorName: profileData?.full_name || 'Unknown',
-            likes: likeCount,
-            comments: commentData,
+            likes: likesRes?.data?.length ?? 0,
+            comments: commentsRes?.data ?? [],
             userHasLiked: likesRes?.data?.some((like) => like.user_id === user?.id),
           };
         })
@@ -266,8 +267,8 @@ function Feed() {
       setPosts(postsWithMeta);
     };
 
-    if (user) fetchPostsWithMeta();
-  }, [user]);
+    if (user && clubId) fetchPostsWithMeta();
+}, [user, clubId]);
 
   const filteredPosts =
     selectedFilter === 'all'
@@ -464,10 +465,7 @@ function Feed() {
       )}
     </div>
 
-
-
-
-        </div>
+    </div>
       )}
 
       <header className="landing-header">
@@ -491,6 +489,8 @@ function Feed() {
             <p style={{ color: '#1f0c44', marginBottom: '10px' }}>
               Stay in the loop with polls, events, and updates!
             </p>
+
+            <h2>Remember the terms and conditions of {clubName} that you have agreed to!</h2>
           </div>
         </div>
       </header>
