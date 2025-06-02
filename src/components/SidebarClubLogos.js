@@ -36,12 +36,12 @@ function SidebarClubLogos() {
     <div className="sidebar-club-logos">
       {clubs.map((club) => (
         <img
-        key={club.id}
-        src={club.logo}
-        alt={club.name}
-        title={club.name}
-        className="club-logo-sidebar"
-        onClick={() => navigate(`/clubs/${club.id}`)} 
+          key={club.name}
+          src={club.logo}
+          alt={club.name}
+          title={club.name}
+          className="club-logo-sidebar"
+          onClick={() => navigate('/feed')} // Or navigate to a club-specific route
           style={{
             width: '40px',
             height: '40px',

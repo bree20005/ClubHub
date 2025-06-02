@@ -125,6 +125,7 @@ function JoinClubPage() {
 
             setMessage('Successfully joined club!');
             setShowAgreementModal(false); 
+            window.location.reload(); 
             navigate('/feed');            
           }}
         >
