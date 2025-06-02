@@ -158,9 +158,10 @@ function CreateContentPage() {
           event_time: eventDate,
           image_urls: posterUrl ? [posterUrl] : [],
           created_at: timestamp,
-          user_id: user.id,  // Store user_id for the post
+          user_id: user.id,
           approved: true,
-          author_name: authorName,  // Store the author's full name
+          author_name: authorName,
+          rsvp_count: 0,
         });
 
         if (error) throw new Error(error.message);
