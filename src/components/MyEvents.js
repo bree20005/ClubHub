@@ -3,72 +3,101 @@ import { supabase } from './supabase';
 
 function MyEvents() {
   const [user, setUser] = useState(null);
-  const [events, setEvents] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [past, setPast] = useState([]);
 
   useEffect(() => {
     const loadUserAndEvents = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-      if (error) return console.error('User error:', error.message);
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('User error:', error.message);
+        return;
+      }
+
       setUser(user);
 
-      const { data: rsvps } = await supabase
+      const { data: rsvps, error: rsvpError } = await supabase
         .from('rsvps')
         .select('event_id')
         .eq('user_id', user.id);
 
+      if (rsvpError || !rsvps?.length) return;
+
       const eventIds = rsvps.map((r) => r.event_id);
 
-      const { data: eventsData } = await supabase
+      const { data: eventsData, error: eventsError } = await supabase
         .from('posts')
         .select('*')
         .in('id', eventIds)
-        .eq('type', 'event')
-        .gte('event_time', new Date().toISOString())
-        .order('event_time', { ascending: true });
+        .eq('type', 'event');
 
-      setEvents(eventsData);
+      if (eventsError) {
+        console.error('Event fetch error:', eventsError.message);
+        return;
+      }
+
+      const now = new Date();
+      const upcomingEvents = eventsData
+        .filter((event) => new Date(event.event_time) >= now)
+        .sort((a, b) => new Date(a.event_time) - new Date(b.event_time));
+      const pastEvents = eventsData
+        .filter((event) => new Date(event.event_time) < now)
+        .sort((a, b) => new Date(b.event_time) - new Date(a.event_time));
+
+      setUpcoming(upcomingEvents);
+      setPast(pastEvents);
     };
 
     loadUserAndEvents();
   }, []);
 
+  const renderEventCard = (event) => (
+    <div key={event.id} className="event-card post-card">
+      <div className="post-meta" style={{ marginBottom: '0.5rem' }}>
+        <strong>{event.author_name || 'Unknown'}</strong> •{' '}
+        {new Date(event.created_at).toLocaleString()}
+      </div>
+
+      <h2>{event.content}</h2>
+      <p>📆 {new Date(event.event_time).toLocaleString()}</p>
+
+      {event.image_urls?.[0] && (
+        <img
+          src={event.image_urls[0]}
+          alt="event poster"
+          className="preview-image"
+          style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '1rem' }}
+        />
+      )}
+
+      <p style={{ marginTop: '0.5rem' }}>✅ RSVP’d</p>
+    </div>
+  );
+
   return (
     <div className="my-events-page">
       <h1>Welcome back, {user?.user_metadata?.full_name || 'Friend'}!</h1>
-      <p>You have {events.length} upcoming events.</p>
+      <p>
+        You have {upcoming.length} upcoming event{upcoming.length !== 1 ? 's' : ''} RSVP’d to.
+      </p>
 
-      <div className="filter-bar">
-        <button className="active">Upcoming</button>
-        <button>Hosting</button>
-        <button>Open invite</button>
-        <button>Attended</button>
-        <button>All past events</button>
-      </div>
+      {upcoming.length > 0 && (
+        <>
+          <h2 className="section-heading">Upcoming Events</h2>
+          <div className="event-grid">{upcoming.map(renderEventCard)}</div>
+        </>
+      )}
 
-      <div className="event-grid">
-        {events.map((event) => (
-          <div key={event.id} className="event-card-grid">
-            <div className="event-time-tag">
-              {new Date(event.event_time).toLocaleDateString('en-US', {
-                weekday: 'short',
-                hour: 'numeric',
-                minute: 'numeric',
-              })}
-            </div>
-            <img src={event.image_urls?.[0]} className="event-poster" alt="poster" />
-            <div className="event-footer">
-              <strong>{event.content}</strong>
-              <p>👍 Going</p>
-            </div>
-          </div>
-        ))}
-        <div className="event-card-grid new-event-placeholder">
-          <span>＋ NEW EVENT</span>
-        </div>
-      </div>
+      {past.length > 0 && (
+        <>
+          <h2 className="section-heading">Past Events</h2>
+          <div className="event-grid">{past.map(renderEventCard)}</div>
+        </>
+      )}
+
+      {upcoming.length === 0 && past.length === 0 && (
+        <p>No RSVP’d events yet. Check out the Feed!</p>
+      )}
     </div>
   );
 }

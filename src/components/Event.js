@@ -1,10 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 
-function Event({ content, eventTime, image, authorName, createdAt, id, user }) {
+function Event({ content, eventTime, image, authorName, createdAt, id }) {
   const [rsvpCount, setRsvpCount] = useState(0);
   const [userHasRSVPd, setUserHasRSVPd] = useState(false);
+  const [user, setUser] = useState(null);
 
+  // Fetch current user
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error fetching user:', error.message);
+      } else {
+        setUser(data.user);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Fetch RSVP data
   useEffect(() => {
     const fetchRSVPs = async () => {
       const { data: rsvps, error: rsvpError } = await supabase
@@ -22,12 +38,12 @@ function Event({ content, eventTime, image, authorName, createdAt, id, user }) {
         setRsvpCount(postMeta?.rsvp_count || 0);
         setUserHasRSVPd(rsvps.some((r) => r.user_id === user?.id));
       } else {
-        console.error('Error fetching RSVP data:', rsvpError?.message || postError?.message);
+        console.error('RSVP fetch error:', rsvpError?.message || postError?.message);
       }
     };
 
     if (user) fetchRSVPs();
-  }, [id, user]);
+  }, [user, id]);
 
   const toggleRSVP = async () => {
     if (!user) return;
@@ -42,55 +58,58 @@ function Event({ content, eventTime, image, authorName, createdAt, id, user }) {
       if (!error) {
         setRsvpCount((prev) => prev - 1);
         setUserHasRSVPd(false);
-
-        await supabase
-          .from('posts')
-          .update({ rsvp_count: rsvpCount - 1 })
-          .eq('id', id);
+        await supabase.from('posts').update({ rsvp_count: rsvpCount - 1 }).eq('id', id);
+      } else {
+        console.error('Error removing RSVP:', error.message);
       }
     } else {
-      const { error } = await supabase.from('rsvps').insert([
-        {
-          event_id: id,
-          user_id: user.id,
-        },
-      ]);
+      const { error } = await supabase
+        .from('rsvps')
+        .insert([{ event_id: id, user_id: user.id }]);
 
       if (!error) {
         setRsvpCount((prev) => prev + 1);
         setUserHasRSVPd(true);
-
-        await supabase
-          .from('posts')
-          .update({ rsvp_count: rsvpCount + 1 })
-          .eq('id', id);
+        await supabase.from('posts').update({ rsvp_count: rsvpCount + 1 }).eq('id', id);
+      } else {
+        console.error('Error adding RSVP:', error.message);
       }
     }
   };
 
   return (
-    <div className="event-card">
-      <div className="event-meta">
-        <strong>{authorName}</strong> • {new Date(createdAt).toLocaleString()}
+    <div className="post-card">
+      <div className="post-meta">
+        <strong>{authorName || 'Unknown'}</strong> • {new Date(createdAt).toLocaleString()}
       </div>
 
       <h2 style={{ marginTop: '0.5rem' }}>{content}</h2>
-      <p>📆 {new Date(eventTime).toLocaleString()}</p>
+
+      <div className="event-time">📅 {new Date(eventTime).toLocaleString()}</div>
 
       {image && (
         <img
           src={image}
           alt="event poster"
           className="preview-image"
-          style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '1rem' }}
         />
       )}
 
-      <button className="rsvp-button" onClick={toggleRSVP}>
-        {userHasRSVPd ? '✅ Going (Click to Cancel)' : '🎟️ I’m Going'}
-      </button>
-
-      <p style={{ marginTop: '0.5rem' }}>{rsvpCount} going</p>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '1rem',
+          flexWrap: 'wrap',
+          gap: '0.5rem',
+        }}
+      >
+        <p style={{ margin: 0 }}>{rsvpCount} going</p>
+        <button className="rsvp-button" onClick={toggleRSVP}>
+          {userHasRSVPd ? '✅ Going (Cancel)' : '🎟️ I’m Going'}
+        </button>
+      </div>
     </div>
   );
 }
