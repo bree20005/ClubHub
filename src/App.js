@@ -207,6 +207,20 @@ function ProtectedRoute({ children }) {
   return loggedIn ? children : <Navigate to="/login" />;
 }
 
+function ConditionalFeedRedirect({ selectedClub, setSelectedClub }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!selectedClub) {
+      navigate('/club-stream', { replace: true });
+    }
+  }, [selectedClub]);
+
+  if (!selectedClub) return null;
+
+  return <Feed selectedClub={selectedClub} setSelectedClub={setSelectedClub} />;
+}
+
 function Layout() {
   const location = useLocation();
   const [selectedClub, setSelectedClub] = useState('');
@@ -261,11 +275,23 @@ function Layout() {
               </AuthRedirect>
             }
           />
-          <Route
+          {/* <Route
             path="/feed"
             element={
               <ProtectedRoute>
                 <Feed selectedClub={selectedClub} setSelectedClub={setSelectedClub} />
+              </ProtectedRoute>
+            }
+          /> */}
+
+          <Route
+            path="/feed"
+            element={
+              <ProtectedRoute>
+                <ConditionalFeedRedirect
+                  selectedClub={selectedClub}
+                  setSelectedClub={setSelectedClub}
+                />
               </ProtectedRoute>
             }
           />
@@ -291,7 +317,6 @@ function Layout() {
           <Route path="/join-club" element={<JoinClubPage />} />
           <Route path="/feed/:clubId" element={<Feed />} />
           <Route path="/club-stream" element={<ClubStream />} />
-
           
         </Routes>
       </main>

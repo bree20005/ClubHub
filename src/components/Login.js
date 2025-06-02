@@ -38,7 +38,7 @@ function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/club-stream`,
+        redirectTo: `${window.location.origin}/feed`,
       },
     });
 

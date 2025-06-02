@@ -184,7 +184,7 @@ function Feed() {
         alert('Event submitted for approval!');
       }
 
-      navigate('/club-stream');
+      navigate('/feed');
     } catch (err) {
       alert(`Error: ${err.message}`);
     }

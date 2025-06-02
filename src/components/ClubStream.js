@@ -8,7 +8,7 @@ import LikeButton from './LikeButton';
 import { useParams, useNavigate } from 'react-router-dom';
 import sampleCover from './assets/clubs.jpg';
 
-function Feed() {
+function ClubStream() {
   const navigate = useNavigate();
   const { clubId } = useParams();
   const [user, setUser] = useState(null);
@@ -646,4 +646,4 @@ function Feed() {
   );
 }
 
-export default Feed;
+export default ClubStream;
