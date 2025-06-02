@@ -568,7 +568,7 @@ function Feed() {
             color: '#7c5e99',
             border: '2px solid #7c5e99',
             padding: '6px 10px',
-            marginBottom: '2px',
+            marginBottom: '40px',
             marginTop: '50px',
             paddingTop: '0px',
             borderRadius: '50%',
