@@ -106,9 +106,33 @@ function Event({ content, eventTime, image, authorName, createdAt, id }) {
         }}
       >
         <p style={{ margin: 0 }}>{rsvpCount} going</p>
-        <button className="rsvp-button" onClick={toggleRSVP}>
-          {userHasRSVPd ? '✅ Going (Cancel)' : '🎟️ I’m Going'}
-        </button>
+        <button
+        onClick={toggleRSVP}
+        style={{
+          marginTop: '1rem',
+          padding: '0.5rem 1.2rem',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          color: '#E0D8F6',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          fontSize: '0.9rem',
+          fontWeight: 600,
+          backdropFilter: 'blur(6px)',
+          transition: 'all 0.2s ease',
+          cursor: 'pointer'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+          e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+        }}
+      >
+        {userHasRSVPd ? '✅ Going (Cancel)' : '🎟️ I’m Going'}
+      </button>
+
       </div>
     </div>
   );

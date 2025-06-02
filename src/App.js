@@ -125,7 +125,7 @@ function Sidebar({ onClubSelect, selectedClub }) {
     <nav className="sidebar">
       <Logo logo={logo} />
       <ul>
-        <li><Link to="/feed">Feed (remove when club-feed done)</Link></li>
+        {/* <li><Link to="/feed">Feed (remove when club-feed done)</Link></li> */}
         {/* <li><Link to="/myevents">My Events</Link></li> */}
         {/* <li><Link to="/calendar">Calendar</Link></li> */}
         {/* <li><Link to="/create">Create Content</Link></li> */}

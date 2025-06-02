@@ -7,18 +7,18 @@ function ClubSuccessPage() {
   const { clubCode, clubName } = state || {};
   const [copied, setCopied] = useState(false);
 
-  if (!clubCode || !clubName) {
-    return (
-      <div style={containerStyle}>
-        <div style={cardStyle}>
-          <h2 style={{ marginBottom: '1.5rem' }}>Missing club info.</h2>
-          <button style={buttonStyle} onClick={() => navigate('/feed')}>
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // if (!clubCode || !clubName) {
+  //   return (
+  //     <div style={containerStyle}>
+  //       <div style={cardStyle}>
+  //         <h2 style={{ marginBottom: '1.5rem' }}>Missing club info.</h2>
+  //         <button style={buttonStyle} onClick={() => navigate('/feed')}>
+  //           Go Back
+  //         </button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(clubCode).then(() => {
