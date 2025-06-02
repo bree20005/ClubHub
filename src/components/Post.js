@@ -200,12 +200,33 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
       </div>
 
       <button
-        onClick={() => setShowComments((prev) => !prev)}
-        className="toggle-comments-button"
-        style={{ marginTop: '1rem', marginBottom: '0.5rem' }}
-      >
-        {showComments ? 'Hide Comments' : `Show Comments (${commentList.length})`}
-      </button>
+  onClick={() => setShowComments((prev) => !prev)}
+  style={{
+    marginTop: '1rem',
+    marginBottom: '0.5rem',
+    padding: '0.4rem 1rem',
+    borderRadius: '12px',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', // soft, glassy
+    color: '#E0D8F6', // soft lavender/white tone
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    backdropFilter: 'blur(6px)',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer'
+  }}
+  onMouseEnter={(e) => {
+    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+    e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+  }}
+  onMouseLeave={(e) => {
+    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+    e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+  }}
+>
+  {showComments ? 'Hide Comments' : `Show Comments (${commentList.length})`}
+</button>
+
 
       {showComments && (
         <>

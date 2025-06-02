@@ -71,52 +71,50 @@ const handleMouseLeave = () => {
       }}
     />
 
-    {hovered && (
-      <div
-        style={{
-          position: 'absolute',
-          top: '110%',
-          right: 0,
-          backgroundColor: '#1f0c44',
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          padding: '0.25rem 0.5rem',
-          textAlign: 'left',
-          color: '#FFFFFF',
-          width: '140px',
-          fontSize: '0.85rem',
-        }}
-      >
-        <div
-          onClick={() => navigate('/profile')}
-          style={{
-            padding: '6px 0',
-            cursor: 'pointer',
-            fontWeight: 500,
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#34215e')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-        >
-          Show Profile
-        </div>
-        <div
-          onClick={() => {
-            onLogout();
-            navigate('/login', { replace: true });
-          }}
-          style={{
-            padding: '6px 0',
-            cursor: 'pointer',
-            fontWeight: 500,
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#34215e')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-        >
-          Logout
-        </div>
-      </div>
-    )}
+{hovered && (
+  <div
+    style={{
+      position: 'absolute',
+      top: '110%',
+      right: 0,
+      backgroundColor: '#1f0c44',
+      borderRadius: '8px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      padding: '0.25rem 0.5rem',
+      textAlign: 'left',
+      color: '#FFFFFF',
+      width: '140px',
+      fontSize: '0.85rem',
+    }}
+  >
+    <div
+      className="profile-option"
+      onClick={() => navigate('/profile')}
+      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}
+    >
+      Profile
+    </div>
+    <div
+      className="profile-option"
+      onClick={() => {
+        navigate('/myevents');
+        setOpen(false);
+      }}
+      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}
+    >
+      My Events
+    </div>
+    <div
+      className="profile-option"
+      onClick={() => {
+        onLogout();
+        navigate('/login', { replace: true });
+      }}
+    >
+      Logout
+    </div>
+  </div>
+)}
   </div>
 </div>
   );
@@ -127,10 +125,10 @@ function Sidebar({ onClubSelect, selectedClub }) {
     <nav className="sidebar">
       <Logo logo={logo} />
       <ul>
-        <li><Link to="/feed">Feed</Link></li>
-        <li><Link to="/myevents">My Events</Link></li>
+        <li><Link to="/feed">Feed (remove when club-feed done)</Link></li>
+        {/* <li><Link to="/myevents">My Events</Link></li> */}
         {/* <li><Link to="/calendar">Calendar</Link></li> */}
-        <li><Link to="/create">Create Content</Link></li>
+        {/* <li><Link to="/create">Create Content</Link></li> */}
       </ul>
       <SidebarClubLogos selectedClub={selectedClub} onClubSelect={onClubSelect} />
       <div className="plus-menu">

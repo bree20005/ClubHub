@@ -33,7 +33,16 @@ function SidebarClubLogos() {
   }, []);
 
   return (
-    <div className="sidebar-club-logos">
+    <div
+      className="sidebar-club-logos"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '20px', // adds space between logos
+        padding: '1rem 0'
+      }}
+    >
       {clubs.map((club) => (
         <img
           key={club.name}
@@ -41,15 +50,21 @@ function SidebarClubLogos() {
           alt={club.name}
           title={club.name}
           className="club-logo-sidebar"
-          onClick={() => navigate('/feed')} // Or navigate to a club-specific route
+          onClick={() => navigate('/feed')}
           style={{
-            width: '40px',
-            height: '40px',
+            width: '60px',
+            height: '60px',
             objectFit: 'cover',
-            borderRadius: '6px',
-            marginBottom: '10px',
+            borderRadius: '10px',
             border: '2px solid transparent',
             cursor: 'pointer',
+            transition: 'transform 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
           }}
         />
       ))}

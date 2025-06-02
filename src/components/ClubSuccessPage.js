@@ -9,9 +9,13 @@ function ClubSuccessPage() {
 
   if (!clubCode || !clubName) {
     return (
-      <div className="feed-container">
-        <h2>Missing club info.</h2>
-        <button onClick={() => navigate('/feed')}>Go Back</button>
+      <div style={containerStyle}>
+        <div style={cardStyle}>
+          <h2 style={{ marginBottom: '1.5rem' }}>Missing club info.</h2>
+          <button style={buttonStyle} onClick={() => navigate('/feed')}>
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
@@ -24,45 +28,90 @@ function ClubSuccessPage() {
   };
 
   return (
-    <div className="feed-container">
-      <h2>🎉 Club <span style={{ color: '#64ffda' }}>{clubName}</span> Created!</h2>
-      <p style={{ fontSize: '1.2rem', marginTop: '1rem' }}>
-        Share this club code to let others join:
-      </p>
+    <div style={containerStyle}>
+      <div style={cardStyle}>
+        <h2 style={{ marginBottom: '1rem', fontSize: '2rem', color: offWhite }}>
+          Club{' '}
+          <span style={{ color: offWhite, fontWeight: 'bold' }}>{clubName}</span>{' '}
+          Created!
+        </h2>
+        <p style={{ fontSize: '1.2rem', marginBottom: '1.5rem', color: offWhite }}>
+          Share this club code to let others join:
+        </p>
 
-      <div
-        style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          color: '#64ffda',
-          background: '#112240',
-          padding: '1rem',
-          borderRadius: '10px',
-          marginTop: '1rem',
-          display: 'inline-block',
-        }}
-      >
-        {clubCode}
-      </div>
+        <div style={codeBoxStyle}>{clubCode}</div>
 
-      <div style={{ marginTop: '1rem' }}>
+        <button style={{ ...buttonStyle, marginTop: '1.5rem', width: '100%' }} onClick={handleCopy}>
+          {copied ? 'Copied!' : 'Copy Code'}
+        </button>
+
         <button
-          className="upload-button"
-          onClick={handleCopy}
+          style={subtleTextButtonStyle}
+          onClick={() => navigate('/feed')}
+          onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'}
+          onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}
         >
-          📋 {copied ? 'Copied!' : 'Copy Code'}
+          Go to Club Feed
         </button>
       </div>
-
-      <button
-        style={{ marginTop: '2rem' }}
-        onClick={() => navigate('/feed')}
-        className="gallery-button"
-      >
-        Go to Club Feed
-      </button>
     </div>
   );
 }
+
+const offWhite = '#ddd';
+
+const containerStyle = {
+  minHeight: '100vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: '2rem',
+  backgroundColor: 'transparent',
+  fontFamily: 'Inter, sans-serif',
+};
+
+const cardStyle = {
+  backgroundColor: '#1e1333',
+  borderRadius: '16px',
+  padding: '3rem',
+  width: '100%',
+  maxWidth: '500px',
+  color: 'white',
+  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+  textAlign: 'center',
+};
+
+const codeBoxStyle = {
+  fontSize: '2.5rem',
+  fontWeight: 'bold',
+  color: offWhite,
+  background: '#2b224b',
+  padding: '1rem',
+  borderRadius: '10px',
+  marginBottom: '1rem',
+  userSelect: 'all',
+};
+
+const buttonStyle = {
+  backgroundColor: 'white',
+  color: '#1e1333',
+  fontSize: '1.1rem',
+  padding: '1rem',
+  borderRadius: '10px',
+  border: 'none',
+  cursor: 'pointer',
+};
+
+const subtleTextButtonStyle = {
+  marginTop: '2rem',
+  background: 'none',
+  border: 'none',
+  color: '#aaa',
+  fontSize: '1rem',
+  cursor: 'pointer',
+  textDecoration: 'none',
+  padding: 0,
+  fontWeight: 'normal',
+};
 
 export default ClubSuccessPage;
