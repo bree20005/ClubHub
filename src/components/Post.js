@@ -23,15 +23,18 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
     };
 
     const checkIfAdmin = async () => {
-      const { data, error } = await supabase
-        .from('clubs')
-        .select('created_by')
-        .eq('id', clubId)
+        const { data, error } = await supabase
+        .from('club_admin')
+        .select('user_id')
+        .eq('club_id', clubId)
+        .eq('user_id', user?.id)
         .single();
 
-      if (!error && data) {
-        setIsAdmin(data.created_by === user?.id);
-      }
+        if (!error && data) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
     };
 
     const fetchPostAuthor = async () => {
@@ -152,7 +155,7 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
       </div>
     ));
   };
-
+//deleteing a post but for now it is for everyone
   const confirmDelete = () => window.confirm("Are you sure you want to delete this post?");
 
   const handleDeletePost = async () => {
@@ -168,7 +171,8 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
     } else {
       alert('Post deleted!');
     }
-  };
+    window.location.reload();
+  }
 
   return (
     <div className="post-card">
@@ -187,11 +191,9 @@ function Post({ id, content, tag, image, imageGallery = [], createdAt, user, clu
         />
       )}
 
-      {isAdmin && (
-        <button onClick={handleDeletePost} className="delete-button">
-          🗑️
-        </button>
-      )}
+      <button onClick={handleDeletePost} className="delete-button">
+            🗑️ Delete Post
+      </button>
 
       <div style={{ marginTop: '0.5rem' }}>
         <button className="like-button" onClick={handleLike}>
