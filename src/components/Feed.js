@@ -272,7 +272,7 @@ function Feed() {
             supabase.from('likes').select('*').eq('post_id', post.id),
             supabase
               .from('comments')
-              .select('*, profiles(full_name)')
+              .select('id, content, profiles(full_name)')
               .eq('post_id', post.id)
               .order('created_at', { ascending: true }),
           ]);
