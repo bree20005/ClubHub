@@ -77,10 +77,10 @@ function StartClubPage() {
         .select()
         .single();
 
-      if (error) {
-        alert(`Failed to create club: ${error.message}`);
-        return;
-      }
+      // if (error) {
+      //   alert(`Failed to create club: ${error.message}`);
+      //   return;
+      // }
 
       await supabase.from('user_clubs').insert({
         user_id: user.id,
@@ -91,8 +91,6 @@ function StartClubPage() {
         user_id: user.id,
         club_id: club.id,
       });
-
-      // window.location.href = `/club-success?code=${clubCode}&name=${encodeURIComponent(clubName)}`;
 
       navigate('/club-success', {
         state: { clubCode, clubName }
