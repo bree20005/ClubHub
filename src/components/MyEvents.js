@@ -75,30 +75,36 @@ function MyEvents() {
 
   return (
     <div style={pageWrapperStyle}>
-      <div style={{ textAlign: 'center', marginBottom: '3rem', color: 'black'}}>
+      <div style={{ textAlign: 'center', marginBottom: '3rem', color: 'black' }}>
         <h1 style={mainHeadingStyle}>
           Welcome back, {user?.user_metadata?.full_name || 'Friend'}!
         </h1>
         <p style={subTextStyle}>
-          You have {upcoming.length} upcoming event{upcoming.length !== 1 ? 's' : ''} RSVP’d to.
+          You have RSVP’d to {upcoming.length} upcoming event{upcoming.length !== 1 ? 's' : ''}. Check your feed for more!
         </p>
       </div>
 
-      {upcoming.length > 0 && (
-        <>
-          <h2 style={sectionHeadingStyle}>Upcoming Events</h2>
-          <div style={gridStyle}>{upcoming.map(renderEventCard)}</div>
-        </>
-      )}
+      {(upcoming.length > 0 || past.length > 0) ? (
+        <div style={twoColGridStyle}>
+          <div>
+            <h2 style={sectionHeadingStyle}>🗓️ Upcoming Events</h2>
+            {upcoming.length > 0 ? (
+              <div style={gridStyle}>{upcoming.map(renderEventCard)}</div>
+            ) : (
+              <p style={emptyStateStyle}>No upcoming events yet.</p>
+            )}
+          </div>
 
-      {past.length > 0 && (
-        <>
-          <h2 style={sectionHeadingStyle}>Past Events</h2>
-          <div style={gridStyle}>{past.map(renderEventCard)}</div>
-        </>
-      )}
-
-      {upcoming.length === 0 && past.length === 0 && (
+          <div>
+            <h2 style={sectionHeadingStyle}>✔️ Past Events</h2>
+            {past.length > 0 ? (
+              <div style={gridStyle}>{past.map(renderEventCard)}</div>
+            ) : (
+              <p style={emptyStateStyle}>No past events yet.</p>
+            )}
+          </div>
+        </div>
+      ) : (
         <p style={emptyStateStyle}>No RSVP’d events yet. Check out the Feed!</p>
       )}
     </div>
@@ -112,24 +118,31 @@ const pageWrapperStyle = {
   fontFamily: 'Inter, sans-serif',
 };
 
+const twoColGridStyle = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '3rem',
+  maxWidth: '1200px',
+  margin: '0 auto',
+};
+
 const gridStyle = {
   display: 'grid',
   gridTemplateColumns: '1fr',
   gap: '2rem',
-  maxWidth: '800px',
-  margin: '0 auto',
 };
 
 const cardStyle = {
   padding: '2rem',
   borderRadius: '16px',
   border: '1px solid #ddd',
+  backgroundColor: '#f9f9ff',
 };
 
 const mainHeadingStyle = {
   fontSize: '2.75rem',
   fontWeight: '700',
-  color: 'black'
+  color: 'black',
 };
 
 const subTextStyle = {
@@ -140,7 +153,7 @@ const subTextStyle = {
 const sectionHeadingStyle = {
   fontSize: '2rem',
   fontWeight: '600',
-  marginTop: '3rem',
+  marginTop: '1rem',
   marginBottom: '1.5rem',
   textAlign: 'center',
 };
@@ -149,6 +162,7 @@ const eventTitleStyle = {
   fontSize: '1.5rem',
   fontWeight: '600',
   marginTop: '0.75rem',
+  color: '#FFB6C1',
 };
 
 const eventDateStyle = {
@@ -179,7 +193,7 @@ const emptyStateStyle = {
   fontSize: '1.3rem',
   textAlign: 'center',
   marginTop: '2rem',
-  color: 'black'
+  color: 'black',
 };
 
 export default MyEvents;
