@@ -34,19 +34,36 @@ function LoginPage() {
     };
   }, [navigate]);
 
-  const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/feed`,
-      },
-    });
+  // const handleLogin = async () => {
+  //   const { error } = await supabase.auth.signInWithOAuth({
+  //     provider: 'google',
+  //     options: {
+  //       redirectTo: `${window.location.origin}/feed`,
+  //     },
+  //   });
 
-    if (error) {
-      console.error('Login error:', error.message);
-      alert('Login failed. Please try again.');
-    }
-  };
+  //   if (error) {
+  //     console.error('Login error:', error.message);
+  //     alert('Login failed. Please try again.');
+  //   }
+  // };
+      const handleLogin = async () => {
+        const redirectTo =
+          process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3000/feed'
+            : 'https://cs278project.vercel.app/feed';
+
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo },
+        });
+
+        if (error) {
+          console.error('Login error:', error.message);
+          alert('Login failed. Please try again.');
+        }
+      };
+
 
   return (
     <>
