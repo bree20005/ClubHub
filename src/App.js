@@ -214,7 +214,7 @@ function ConditionalFeedRedirect({ selectedClub, setSelectedClub }) {
 
   useEffect(() => {
     if (!selectedClub) {
-      navigate('/club-stream', { replace: true });
+      navigate('/create-profile', { replace: true });
     }
   }, [selectedClub]);
 
