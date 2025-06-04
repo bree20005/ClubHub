@@ -50,8 +50,8 @@ function LoginPage() {
       const handleLogin = async () => {
         const redirectTo =
           process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000/feed'
-            : 'https://cs278project.vercel.app/feed';
+            ? 'http://localhost:3000/login'
+            : 'https://cs278project.vercel.app/login';
 
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
