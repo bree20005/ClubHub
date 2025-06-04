@@ -182,7 +182,9 @@ function AuthRedirect({ children }) {
 
   if (loading) return null;
 
-  if (redirectPath && (location.pathname === '/' || location.pathname === '/login')) {
+  // if (redirectPath && (location.pathname === '/' || location.pathname === '/login'))
+  // if (redirectPath && location.pathname === '/login') {
+  if (redirectPath) {
     return <Navigate to={redirectPath} />;
   }
 
