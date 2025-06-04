@@ -5,34 +5,34 @@ import { useNavigate } from 'react-router-dom';
 function LoginPage() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        const user = session?.user;
-        if (!user) return;
+  // useEffect(() => {
+  //   const { data: authListener } = supabase.auth.onAuthStateChange(
+  //     async (event, session) => {
+  //       const user = session?.user;
+  //       if (!user) return;
 
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', user.id)
-          .single();
+  //       const { data: profile, error } = await supabase
+  //         .from('profiles')
+  //         .select('id')
+  //         .eq('id', user.id)
+  //         .single();
 
-        if (error && error.code === 'PGRST116') {
-          // No profile found — insert blank and go to create page
-          await supabase.from('profiles').insert({
-            id: user.id,
-          });
-          navigate('/create-profile');
-        } else if (profile) {
-          navigate('/join-or-create-club');
-        }
-      }
-    );
+  //       if (error && error.code === 'PGRST116') {
+  //         // No profile found — insert blank and go to create page
+  //         await supabase.from('profiles').insert({
+  //           id: user.id,
+  //         });
+  //         navigate('/create-profile');
+  //       } else if (profile) {
+  //         navigate('/join-or-create-club');
+  //       }
+  //     }
+  //   );
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [navigate]);
+  //   return () => {
+  //     authListener.subscription.unsubscribe();
+  //   };
+  // }, [navigate]);
 
   // const handleLogin = async () => {
   //   const { error } = await supabase.auth.signInWithOAuth({
