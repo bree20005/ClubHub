@@ -6,6 +6,7 @@ import Feed from './components/Feed';
 import Polls from './components/Polls';
 import Profile from './components/Profile';
 import Calendar from './components/Calendar';
+import Register from './components/Register.js';
 import CreateContentPage from './components/CreateContent';
 import LoginPage from './components/Login';
 import CreateProfilePage from './components/CreateProfilePage';
@@ -20,6 +21,7 @@ import ClubStream from './components/ClubStream';
 
 import './index.css';
 import logo from './components/assets/logo.png';
+import LoginNew from './components/LoginNew.js';
 
 const Logo = ({ logo }) => {
   const navigate = useNavigate();
@@ -31,93 +33,93 @@ function ProfileDropdown({ avatarUrl, onLogout }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
-let hoverTimeout;
+  let hoverTimeout;
 
-const handleMouseEnter = () => {
-  clearTimeout(hoverTimeout);
-  setHovered(true);
-};
+  const handleMouseEnter = () => {
+    clearTimeout(hoverTimeout);
+    setHovered(true);
+  };
 
-const handleMouseLeave = () => {
-  hoverTimeout = setTimeout(() => setHovered(false), 200); // Delay to allow movement
-};
+  const handleMouseLeave = () => {
+    hoverTimeout = setTimeout(() => setHovered(false), 200);
+  };
 
   return (
     <div
-  style={{
-    position: 'fixed',
-    top: '1rem',
-    right: '1rem',
-    zIndex: 1000,
-  }}
-  onMouseEnter={handleMouseEnter}
-  onMouseLeave={handleMouseLeave}
->
-  <div
-    style={{
-      position: 'relative',
-      display: 'inline-block',
-    }}
-  >
-    <img
-      src={avatarUrl}
-      alt="Avatar"
       style={{
-        width: '40px',
-        height: '40px',
-        borderRadius: '50%',
-        objectFit: 'cover',
-        boxShadow: '0 0 5px rgba(0,0,0,0.1)',
-        cursor: 'pointer',
+        position: 'fixed',
+        top: '1rem',
+        right: '1rem',
+        zIndex: 1000,
       }}
-    />
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div
+        style={{
+          position: 'relative',
+          display: 'inline-block',
+        }}
+      >
+        <img
+          src={avatarUrl}
+          alt="Avatar"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            objectFit: 'cover',
+            boxShadow: '0 0 5px rgba(0,0,0,0.1)',
+            cursor: 'pointer',
+          }}
+        />
 
-{hovered && (
-  <div
-    style={{
-      position: 'absolute',
-      top: '110%',
-      right: 0,
-      backgroundColor: '#1f0c44',
-      borderRadius: '8px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      padding: '0.25rem 0.5rem',
-      textAlign: 'left',
-      color: '#FFFFFF',
-      width: '140px',
-      fontSize: '0.85rem',
-    }}
-  >
-    <div
-      className="profile-option"
-      onClick={() => navigate('/profile')}
-      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}
-    >
-      Profile
+        {hovered && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '110%',
+              right: 0,
+              backgroundColor: '#1f0c44',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              padding: '0.25rem 0.5rem',
+              textAlign: 'left',
+              color: '#FFFFFF',
+              width: '140px',
+              fontSize: '0.85rem',
+            }}
+          >
+            <div
+              className="profile-option"
+              onClick={() => navigate('/profile')}
+              style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}
+            >
+              Profile
+            </div>
+            <div
+              className="profile-option"
+              onClick={() => {
+                navigate('/myevents');
+                setOpen(false);
+              }}
+              style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}
+            >
+              My Events
+            </div>
+            <div
+              className="profile-option"
+              onClick={() => {
+                onLogout();
+                navigate('/login', { replace: true });
+              }}
+            >
+              Logout
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-    <div
-      className="profile-option"
-      onClick={() => {
-        navigate('/myevents');
-        setOpen(false);
-      }}
-      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}
-    >
-      My Events
-    </div>
-    <div
-      className="profile-option"
-      onClick={() => {
-        onLogout();
-        navigate('/login', { replace: true });
-      }}
-    >
-      Logout
-    </div>
-  </div>
-)}
-  </div>
-</div>
   );
 }
 
@@ -126,11 +128,9 @@ function Sidebar({ onClubSelect, selectedClub }) {
     <nav className="sidebar">
       <Logo logo={logo} />
       <ul>
-        {/* <li><Link to="/feed">Feed (remove when club-feed done)</Link></li> */}
-        {/* <li><Link to="/myevents">My Events</Link></li> */}
-        {/* <li><Link to="/calendar">Calendar</Link></li> */}
-        {/* <li><Link to="/create">Create Content</Link></li> */}
-        <li style={{marginTop: '10px', marginBottom: '-10px', fontSize: '0.9rem'}}><Link to="/club-stream">🔮 Club Stream</Link></li>
+        <li style={{ marginTop: '10px', marginBottom: '-10px', fontSize: '0.9rem' }}>
+          <Link to="/club-stream">🔮 Club Stream</Link>
+        </li>
       </ul>
       <SidebarClubLogos selectedClub={selectedClub} onClubSelect={onClubSelect} />
       <div className="plus-menu">
@@ -147,7 +147,6 @@ function Sidebar({ onClubSelect, selectedClub }) {
 function AuthRedirect({ children }) {
   const [loading, setLoading] = useState(true);
   const [redirectPath, setRedirectPath] = useState(null);
-  const location = useLocation();
 
   useEffect(() => {
     const checkUserProfile = async () => {
@@ -161,17 +160,30 @@ function AuthRedirect({ children }) {
       }
 
       const userId = session.user.id;
-
+//seeing if user has a profile so we can switch pages
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error || !profile) {
+      if (error || !profile || !profile.full_name) {
+        // creating profile here
         setRedirectPath('/create-profile');
       } else {
-        setRedirectPath('/feed');
+        // joining clubs here
+        const { data: memberships, error: membershipError } = await supabase
+          .from('user_clubs')
+          .select('club_id')
+          .eq('user_id', userId)
+          .limit(1);
+
+        if (membershipError || !memberships || memberships.length === 0) {
+          // User needs to join a club
+          setRedirectPath('/join-or-create-club');
+        } else {
+          setRedirectPath('/club-stream');
+        }
       }
 
       setLoading(false);
@@ -180,12 +192,10 @@ function AuthRedirect({ children }) {
     checkUserProfile();
   }, []);
 
-  if (loading) return null;
+  if (loading) return <div>Loading...</div>;
 
-  // if (redirectPath && (location.pathname === '/' || location.pathname === '/login'))
-  // if (redirectPath && location.pathname === '/login') {
   if (redirectPath) {
-    return <Navigate to={redirectPath} />;
+    return <Navigate to={redirectPath} replace />;
   }
 
   return children;
@@ -204,23 +214,9 @@ function ProtectedRoute({ children }) {
     checkSession();
   }, []);
 
-  if (loading) return null;
+  if (loading) return <div>Loading...</div>;
 
-  return loggedIn ? children : <Navigate to="/login" />;
-}
-
-function ConditionalFeedRedirect({ selectedClub, setSelectedClub }) {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!selectedClub) {
-      navigate('/create-profile', { replace: true });
-    }
-  }, [selectedClub]);
-
-  if (!selectedClub) return null;
-
-  return <Feed selectedClub={selectedClub} setSelectedClub={setSelectedClub} />;
+  return loggedIn ? children : <Navigate to="/login" replace />;
 }
 
 function Layout() {
@@ -247,16 +243,18 @@ function Layout() {
     fetchAvatar();
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
   return (
     <div className="app-container">
       {!hideSidebar && <Sidebar selectedClub={selectedClub} onClubSelect={setSelectedClub} />}
       {!hideSidebar && (
         <ProfileDropdown
           avatarUrl={avatarUrl || 'https://via.placeholder.com/40'}
-          onLogout={async () => {
-            await supabase.auth.signOut();
-            window.location.reload();
-          }}
+          onLogout={handleLogout}
         />
       )}
       <main className="main-content">
@@ -277,49 +275,128 @@ function Layout() {
               </AuthRedirect>
             }
           />
-          {/* <Route
+
+          <Route
             path="/feed"
             element={
               <ProtectedRoute>
                 <Feed selectedClub={selectedClub} setSelectedClub={setSelectedClub} />
               </ProtectedRoute>
             }
-          /> */}
-
-          <Route
-            path="/feed"
-            element={
-              <ProtectedRoute>
-                <ConditionalFeedRedirect
-                  selectedClub={selectedClub}
-                  setSelectedClub={setSelectedClub}
-                />
-              </ProtectedRoute>
-            }
           />
 
-          <Route
-            path="/myevents"
+          <Route 
+            path="/myevents" 
             element={
               <ProtectedRoute>
                 <MyEvents />
               </ProtectedRoute>
-              }
+            } 
           />
-
-          <Route path="/create-profile" element={<CreateProfilePage />} />
-          <Route path="/join-or-create-club" element={<JoinOrCreateClubPage />} />
-          <Route path="/start-club" element={<StartClubPage />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/polls" element={<Polls />} />
-          <Route path="/LikeButton" element={<LikeButton />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/create" element={<CreateContentPage />} />
-          <Route path="/club-success" element={<ClubSuccessPage />} />
-          <Route path="/join-club" element={<JoinClubPage />} />
-          <Route path="/feed/:clubId" element={<Feed />} />
-          <Route path="/club-stream" element={<ClubStream />} />
           
+          <Route 
+            path="/create-profile" 
+            element={
+              <ProtectedRoute>
+                <CreateProfilePage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/join-or-create-club" 
+            element={
+              <ProtectedRoute>
+                <JoinOrCreateClubPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/start-club" 
+            element={
+              <ProtectedRoute>
+                <StartClubPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/polls" 
+            element={
+              <ProtectedRoute>
+                <Polls />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route path="/LikeButton" element={<LikeButton />} />
+          
+          <Route 
+            path="/calendar" 
+            element={
+              <ProtectedRoute>
+                <Calendar />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/create" 
+            element={
+              <ProtectedRoute>
+                <CreateContentPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/club-success" 
+            element={
+              <ProtectedRoute>
+                <ClubSuccessPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/join-club" 
+            element={
+              <ProtectedRoute>
+                <JoinClubPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/feed/:clubId" 
+            element={
+              <ProtectedRoute>
+                <Feed />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/club-stream" 
+            element={
+              <ProtectedRoute>
+                <ClubStream />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route path="/register" element={<Register />} />
+          <Route path="/loginNew" element={<LoginNew />} />
         </Routes>
       </main>
     </div>

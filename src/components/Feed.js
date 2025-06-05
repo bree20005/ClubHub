@@ -81,6 +81,8 @@ function Feed() {
     }
   };
 
+  
+
   const uploadFile = async (file, pathPrefix) => {
     const filePath = `${user.id}/${Date.now()}_${file.name}`;
     const { error: uploadError } = await supabase.storage
@@ -96,6 +98,14 @@ function Feed() {
     return publicData.publicUrl;
   };
 
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    navigate("/loginnew");
+  };
+
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -109,7 +119,6 @@ function Feed() {
     const timestamp = new Date().toISOString();
 
     try {
-      // Fetch the author's full name from the profiles table using user.id
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('full_name')
@@ -121,9 +130,8 @@ function Feed() {
         return;
       }
 
-      const authorName = profileData?.full_name || 'Unknown'; // Fallback to 'Unknown' if no name found
+      const authorName = profileData?.full_name || 'Unknown'; 
 
-      // Handle creating a post
       if (type === 'post') {
         let imageUrl = null;
         if (imageFile) imageUrl = await uploadFile(imageFile, 'post');
@@ -135,16 +143,15 @@ function Feed() {
           content: caption,
           image_urls: imageUrl ? [imageUrl] : [],
           created_at: timestamp,
-          user_id: user.id,  // Store user_id for the post
+          user_id: user.id,  
           approved: true,
-          author_name: authorName,  // Store the author's full name
+          author_name: authorName, 
         });
 
         if (error) throw new Error(error.message);
         alert('Post submitted!');
       }
 
-      // Handle creating a poll
       if (type === 'poll') {
         const { error } = await supabase.from('posts').insert({
           club_id: selectedClubId,
@@ -153,16 +160,15 @@ function Feed() {
           question,
           options: isOpenEnded ? [] : options,
           created_at: timestamp,
-          user_id: user.id,  // Store user_id for the post
+          user_id: user.id,  
           approved: true,
-          author_name: authorName,  // Store the author's full name
+          author_name: authorName, 
         });
 
         if (error) throw new Error(error.message);
         alert('Poll submitted!');
       }
 
-      // Handle creating an event
       if (type === 'event') {
         let posterUrl = null;
         if (eventPosterFile) posterUrl = await uploadFile(eventPosterFile, 'event');
@@ -175,9 +181,9 @@ function Feed() {
           event_time: eventDate,
           image_urls: posterUrl ? [posterUrl] : [],
           created_at: timestamp,
-          user_id: user.id,  // Store user_id for the post
+          user_id: user.id,  
           approved: true,
-          author_name: authorName,  // Store the author's full name
+          author_name: authorName,  
         });
 
         if (error) throw new Error(error.message);
@@ -302,6 +308,7 @@ function Feed() {
       : posts.filter((post) => post.tag === selectedFilter);
 
   return (
+    
     <div className="feed-container" style={{ position: 'relative' }}>
       {/* Dimmed background */}
       {showModal && (
@@ -561,7 +568,7 @@ function Feed() {
 
       <div className="create-button" style={{ textAlign: 'center'}}>
         <button
-          onClick={() => setShowModal(true)} // Show popup
+          onClick={() => setShowModal(true)}
           aria-label="Add Content"
           style={{
             backgroundColor: 'transparent',
@@ -601,7 +608,7 @@ function Feed() {
 
       <div className="feed-items">
         {filteredPosts.map((item) => {
-          if (!user) return null; // prevent early render
+          if (!user) return null; 
 
           if (item.type === 'post') {
             return (
@@ -618,6 +625,8 @@ function Feed() {
                 clubId={item.club_id} 
                 createdAt={item.created_at}
               />
+
+              
             );
           }
           if (item.type === 'poll') {
@@ -643,6 +652,11 @@ function Feed() {
           return null;
         })}
       </div>
+
+      <div>
+      <h1>Hello, you are logged in.</h1>
+      <button onClick={signOut}>Sign out</button>
+    </div>
 
       </div>
   );
