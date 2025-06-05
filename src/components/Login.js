@@ -53,7 +53,7 @@ function LoginPage() {
 
   return (
     <>
-      <div className="login-page">
+      <div className="login-pagenew">
         <h1
           style={{
             color: 'white',

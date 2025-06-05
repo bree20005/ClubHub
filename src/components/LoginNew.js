@@ -25,9 +25,8 @@ function LoginNew() {
     }
 
     if (data) {
-      navigate("/feed");
-      window.location.reload();
-      return null;
+        navigate("/feed");
+        window.location.reload();
     }
   };
 
@@ -55,6 +54,34 @@ function LoginNew() {
       </form>
       <span>Don't have an account?</span>
       <Link to="/register">Register.</Link>
+
+      <>
+      <div className="login-page">
+        <h1
+          style={{
+            color: 'white',
+            fontSize: '48px',
+            marginBottom: '8px',
+            textShadow: '0 0 6px rgba(155, 89, 182, 0.5)',
+          }}
+        >
+          Welcome to ClubHub
+        </h1>
+        <h2
+          style={{
+            color: 'white',
+            fontSize: '18px',
+            fontWeight: 'normal',
+            marginTop: 0,
+            marginBottom: '20px',
+            textShadow: '0 0 4px rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          Join Your Community
+        </h2>
+
+      </div>
+    </>
     </div>
   );
 }
