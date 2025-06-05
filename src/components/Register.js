@@ -53,7 +53,39 @@ function Register() {
       </form>
       <span>Already have an account?</span>
       <Link to="/loginnew">Log in.</Link>
+
+      <>
+      <div className="register-page">
+        <h1
+          style={{
+            color: 'white',
+            fontSize: '48px',
+            marginBottom: '8px',
+            textShadow: '0 0 6px rgba(155, 89, 182, 0.5)',
+          }}
+        >
+          Welcome to ClubHub
+        </h1>
+        <h2
+          style={{
+            color: 'white',
+            fontSize: '18px',
+            fontWeight: 'normal',
+            marginTop: 0,
+            marginBottom: '20px',
+            textShadow: '0 0 4px rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          Register to join Your Community
+        </h2>
+
+      </div>
+    </>
     </div>
+
+    
+
+    
   );
 }
 

@@ -223,7 +223,7 @@ function Layout() {
   const location = useLocation();
   const [selectedClub, setSelectedClub] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
-  const hideSidebar = location.pathname === '/' || location.pathname === '/loginnew';
+  const hideSidebar = location.pathname === '/' || location.pathname === '/loginnew' || location.pathname === '/register';
 
   useEffect(() => {
     const fetchAvatar = async () => {

@@ -32,7 +32,6 @@ function LoginNew() {
 
   return (
     <div>
-      <h2>Login</h2>
       <br></br>
       {message && <span>{message}</span>}
       <form onSubmit={handleSubmit}>
@@ -56,7 +55,7 @@ function LoginNew() {
       <Link to="/register">Register.</Link>
 
       <>
-      <div className="login-page">
+      <div className="login-page-new">
         <h1
           style={{
             color: 'white',
@@ -77,7 +76,7 @@ function LoginNew() {
             textShadow: '0 0 4px rgba(0, 0, 0, 0.5)',
           }}
         >
-          Join Your Community
+          Login to join Your Community
         </h2>
 
       </div>
