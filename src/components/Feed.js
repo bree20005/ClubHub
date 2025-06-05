@@ -653,10 +653,9 @@ function Feed() {
         })}
       </div>
 
-      <div>
-      <h1>Hello, you are logged in.</h1>
+      {/* <div>
       <button onClick={signOut}>Sign out</button>
-    </div>
+    </div> */}
 
       </div>
   );
