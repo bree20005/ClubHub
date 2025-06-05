@@ -216,14 +216,14 @@ function ProtectedRoute({ children }) {
 
   if (loading) return <div>Loading...</div>;
 
-  return loggedIn ? children : <Navigate to="/login" replace />;
+  return loggedIn ? children : <Navigate to="/loginnew" replace />;
 }
 
 function Layout() {
   const location = useLocation();
   const [selectedClub, setSelectedClub] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
-  const hideSidebar = location.pathname === '/' || location.pathname === '/login';
+  const hideSidebar = location.pathname === '/' || location.pathname === '/loginnew';
 
   useEffect(() => {
     const fetchAvatar = async () => {
