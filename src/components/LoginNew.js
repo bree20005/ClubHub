@@ -25,7 +25,7 @@ function LoginNew() {
     }
 
     if (data) {
-        navigate("/feed");
+        navigate("/club-stream");
         window.location.reload();
     }
   };
