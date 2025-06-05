@@ -30,8 +30,7 @@ function CreateProfilePage() {
       if (profile?.full_name) {
         navigate('/join-or-create-club');
         return;
-      }
-      
+      } //seeing if profile is real
       if (profile) {
         setFullName(profile.full_name || '');
       }

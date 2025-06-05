@@ -111,7 +111,7 @@ function ProfileDropdown({ avatarUrl, onLogout }) {
               className="profile-option"
               onClick={() => {
                 onLogout();
-                navigate('/login', { replace: true });
+                navigate('/loginnew', { replace: true });
               }}
             >
               Logout
