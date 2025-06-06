@@ -263,7 +263,7 @@ function Layout() {
             path="/"
             element={
               <AuthRedirect>
-                <LoginPage />
+                <LoginNew />
               </AuthRedirect>
             }
           />

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import supabase from "../helper/supabaseclient";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -23,6 +24,10 @@ function Register() {
 
     if (data) {
       setMessage("User account created!");
+      setTimeout(() => {
+        navigate('/create-profile');
+        window.location.reload();
+      }, 1500);
     }
 
     setEmail("");
@@ -54,7 +59,6 @@ function Register() {
       <span>Already have an account?</span>
       <Link to="/loginnew">Log in.</Link>
 
-      <>
       <div className="register-page">
         <h1
           style={{
@@ -78,14 +82,8 @@ function Register() {
         >
           Register to join Your Community
         </h2>
-
       </div>
-    </>
     </div>
-
-    
-
-    
   );
 }
 
