@@ -173,7 +173,8 @@ function JoinClubPage() {
 
                 setMessage('Successfully joined club!');
                 setShowAgreementModal(false);
-                navigate('/feed');
+                //navigate('/feed');
+                navigate(`/feed/${currentClub.id}`);
                 window.location.reload();
               }}
               style={{

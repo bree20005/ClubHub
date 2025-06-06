@@ -25,7 +25,9 @@ function JoinOrCreateClubPage() {
       club_id: club.id,
     });
 
-    navigate('/feed');
+    //navigate('/feed');
+    navigate(`/feed/${club.id}`);
+    window.location.reload();
   };
 
   return (
