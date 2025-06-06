@@ -103,7 +103,8 @@ function CreateProfilePage() {
         }
       }
 
-      navigate('/feed');
+      navigate('/club-stream');
+      window.location.reload();
     } catch (error) {
       console.error('Profile creation error:', error);
       alert('An error occurred while creating your profile.');
