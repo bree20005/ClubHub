@@ -196,6 +196,7 @@ function Feed() {
     }
 
     setSubmitting(false);
+    setShowModal(false);
   };
 
   useEffect(() => {

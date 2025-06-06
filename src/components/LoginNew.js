@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import supabase from "../helper/supabaseclient";
 import { Link, useNavigate } from "react-router-dom";
+import logo from './assets/logo.png';
 
 function LoginNew() {
   const navigate = useNavigate();
@@ -32,8 +33,6 @@ function LoginNew() {
 
   return (
     <div className="login-page">
-      {/* Logo */}
-      <img src={'components/assets/logo.png'} alt="ClubHub Logo" className="login-logo" />
       <h1 style={{marginBottom: '40px'}}>Join Your Community</h1>
       {/* <h2>@ ClubHub</h2> */}
 
@@ -44,6 +43,7 @@ function LoginNew() {
           onChange={(e) => setEmail(e.target.value)}
           value={email}
           type="email"
+          style={{color: 'white'}}
           placeholder="Email"
           required
         />
@@ -51,6 +51,7 @@ function LoginNew() {
           onChange={(e) => setPassword(e.target.value)}
           value={password}
           type="password"
+          style={{color: 'white'}}
           placeholder="Password"
           required
         />

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import supabase from "../helper/supabaseclient";
 import { Link, useNavigate } from "react-router-dom";
+import logo from './assets/logo.png';
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -25,7 +26,7 @@ function Register() {
     if (data) {
       setMessage("User account created!");
       setTimeout(() => {
-        navigate('/create-profile');
+        navigate("/create-profile");
         window.location.reload();
       }, 1500);
     }
@@ -35,15 +36,21 @@ function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <br></br>
-      {message && <span>{message}</span>}
-      <form onSubmit={handleSubmit}>
+    <div className="login-page">
+
+      {/* Heading */}
+      <h1 style={{ marginBottom: "40px" }}>Register</h1>
+
+      {/* Feedback Message */}
+      {message && <span className="error-message">{message}</span>}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="login-form">
         <input
           onChange={(e) => setEmail(e.target.value)}
           value={email}
           type="email"
+          style={{color: 'white'}}
           placeholder="Email"
           required
         />
@@ -52,36 +59,16 @@ function Register() {
           value={password}
           type="password"
           placeholder="Password"
+          style={{color: 'white'}}
           required
         />
         <button type="submit">Create Account</button>
       </form>
-      <span>Already have an account?</span>
-      <Link to="/loginnew">Log in.</Link>
 
-      <div className="register-page">
-        <h1
-          style={{
-            color: 'white',
-            fontSize: '48px',
-            marginBottom: '8px',
-            textShadow: '0 0 6px rgba(155, 89, 182, 0.5)',
-          }}
-        >
-          Welcome to ClubHub
-        </h1>
-        <h2
-          style={{
-            color: 'white',
-            fontSize: '18px',
-            fontWeight: 'normal',
-            marginTop: 0,
-            marginBottom: '20px',
-            textShadow: '0 0 4px rgba(0, 0, 0, 0.5)',
-          }}
-        >
-          Register to join Your Community
-        </h2>
+      {/* Log In Link */}
+      <div className="register-link">
+        <span>Already have an account?</span>
+        <Link to="/loginnew">Log in</Link>
       </div>
     </div>
   );
