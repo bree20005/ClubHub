@@ -25,16 +25,21 @@ function LoginNew() {
     }
 
     if (data) {
-        navigate("/club-stream");
-        window.location.reload();
+      navigate("/club-stream");
+      window.location.reload();
     }
   };
 
   return (
-    <div>
-      <br></br>
-      {message && <span>{message}</span>}
-      <form onSubmit={handleSubmit}>
+    <div className="login-page">
+      {/* Logo */}
+      <img src={'components/assets/logo.png'} alt="ClubHub Logo" className="login-logo" />
+      <h1 style={{marginBottom: '40px'}}>Join Your Community</h1>
+      {/* <h2>@ ClubHub</h2> */}
+
+      {message && <span className="error-message">{message}</span>}
+
+      <form onSubmit={handleSubmit} className="login-form">
         <input
           onChange={(e) => setEmail(e.target.value)}
           value={email}
@@ -51,36 +56,11 @@ function LoginNew() {
         />
         <button type="submit">Log in</button>
       </form>
-      <span>Don't have an account?</span>
-      <Link to="/register">Register.</Link>
 
-      <>
-      <div className="login-page-new">
-        <h1
-          style={{
-            color: 'white',
-            fontSize: '48px',
-            marginBottom: '8px',
-            textShadow: '0 0 6px rgba(155, 89, 182, 0.5)',
-          }}
-        >
-          Welcome to ClubHub
-        </h1>
-        <h2
-          style={{
-            color: 'white',
-            fontSize: '18px',
-            fontWeight: 'normal',
-            marginTop: 0,
-            marginBottom: '20px',
-            textShadow: '0 0 4px rgba(0, 0, 0, 0.5)',
-          }}
-        >
-          Login to join Your Community
-        </h2>
-
+      <div className="register-link">
+        <span>Don't have an account? </span>
+        <Link to="/register">Register</Link>
       </div>
-    </>
     </div>
   );
 }
