@@ -542,7 +542,7 @@ function Feed() {
               }}
             >
                 <strong style={{color: 'black'}}>📌 Club Guidelines:</strong>
-                <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-line', color: 'black'}}>{clubRules}</p>
+                <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-line', color: 'black', textAlign: 'left'}}>{clubRules}</p>
               </div>
             )}
           </div>
