@@ -1,3 +1,14 @@
+#HI!! Here is the link to launch our app: https://cs278project.vercel.app/loginnew
+Here are some clubs you can join!!
+Stanford Women in Business: SH5HG3
+Stanford Women in Law: WV3NMV
+Stanford Women in CS: X5D6YU
+On Call Cafe: 5MFPWQ
+Stanford Bucket List: MGG4M4
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
