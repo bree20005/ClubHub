@@ -179,7 +179,7 @@ function AuthRedirect({ children }) {
           .limit(1);
 
         if (membershipError || !memberships || memberships.length === 0) {
-          // User needs to join a club
+          // User NEEDS to join a club
           setRedirectPath('/join-or-create-club');
         } else {
           setRedirectPath('/club-stream');

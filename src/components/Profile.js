@@ -18,7 +18,6 @@ function ProfileHeader() {
         return;
       }
   
-      // Load profile info
       const { data, error } = await supabase
         .from('profiles')
         .select('full_name, avatar_url')
@@ -32,7 +31,6 @@ function ProfileHeader() {
         setAvatarUrl(data.avatar_url || '');
       }
   
-      // Load user club memberships
       const { data: memberships, error: membershipError } = await supabase
         .from('user_clubs')
         .select('club_id, clubs(name, logo_url)')
@@ -43,7 +41,6 @@ function ProfileHeader() {
         return;
       }
   
-      // Load admin clubs
       const { data: adminClubs, error: adminError } = await supabase
         .from('club_admins')
         .select('club_id')
@@ -56,7 +53,6 @@ function ProfileHeader() {
   
       const adminClubIds = new Set(adminClubs.map(entry => entry.club_id));
   
-      // Add admin status to each club
       const clubsWithStatus = memberships.map(m => ({
         ...m.clubs,
         id: m.club_id,

@@ -6,7 +6,6 @@ const RSVPButton = ({ eventId }) => {
   const [going, setGoing] = useState(false);
   const [goingCount, setGoingCount] = useState(0);
 
-  // Get current user
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -19,7 +18,6 @@ const RSVPButton = ({ eventId }) => {
     fetchUser();
   }, []);
 
-  // Fetch RSVP state
   useEffect(() => {
     const fetchRSVPs = async () => {
       const { data, error } = await supabase
