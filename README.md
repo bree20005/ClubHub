@@ -1,81 +1,41 @@
-# HI!! Here is the link to launch our app: https://cs278project.vercel.app/loginnew
-## Here are some clubs you can join!!
-### Stanford Women in Business: SH5HG3
-### Stanford Women in Law: WV3NMV
-### Stanford Women in CS: X5D6YU
-### On Call Cafe: 5MFPWQ
-### Stanford Bucket List: MGG4M4
+# ClubHub
 
+A social platform for Stanford students to create, join, and manage clubs, built as part of CS278: Social Computing.
 
+[**Launch App**](https://cs278project.vercel.app/loginnew)
 
+---
 
-# Getting Started with Create React App
+## Overview
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ClubHub enables students to:
+- Discover and join campus clubs
+- Create new clubs with unique codes
+- Manage membership and participation
 
-## Available Scripts
+The project combines user-centered design, real-time updates, and a modern React frontend backed by Supabase authentication.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🏷️ Example Club Codes
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Try the app with these sample clubs:
+- **Stanford Women in Business:** SH5HG3
+- **Stanford Women in Law:** WV3NMV
+- **Stanford Women in CS:** X5D6YU
+- **On Call Cafe:** 5MFPWQ
+- **Stanford Bucket List:** MGG4M4
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🧩 Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Frontend:** React
+- **Backend:** Supabase
+- **Hosting:** Vercel
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🏆 Acknowledgments
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Created by Breanna Burke, Komal Vij, Amesha Banjara, and Lyla Ibrahim as part of Stanford CS278.
